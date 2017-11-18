@@ -174,27 +174,31 @@ SMART-LIST will be set if this is a continuation of a previous jump."
           (mode-map (intern (format "%S-map" mode))))
       (add-hook mode-hook
                 (lambda ()
-                  (setq smart-jump-list
-                        (append
-                         ;; It's better to figure out how to remove the original
-                         ;; hook from the mode but for now, at the very least,
-                         ;; it's better to remove the old settings upon
-                         ;; calling smart-jump-register again.
-                         ;; It would be better if this updated smart-jump
-                         ;; settings for active modes too.
-                         (seq-remove (lambda (plist)
-                                       (eq gtd-fn (plist-get plist :gtd-fn)))
-                                     smart-jump-list)
-                         (list `(
-                                 :gtd-fn ,gtd-fn
-                                 :pop-fn ,pop-fn
-                                 :should-gtd ,should-gtd
-                                 :heuristic ,heuristic
-                                 :async ,async
-                                 ))))
-
+                  (smart-jump-update-jump-list
+                   gtd-fn pop-fn should-gtd heuristic async)
                   (smart-jump-bind-jump-keys mode-map))
                 :append-to-hook))))
+
+(defun smart-jump-update-jump-list (gtd-fn pop-fn should-gtd heuristic async)
+  "Update `smart-jump-list' with new settings."
+  (setq smart-jump-list
+        (append
+         ;; It's better to figure out how to remove the original
+         ;; hook from the mode but for now, at the very least,
+         ;; it's better to remove the old settings upon
+         ;; calling smart-jump-register again.
+         ;; It would be better if this updated smart-jump
+         ;; settings for active modes too.
+         (seq-remove (lambda (plist)
+                       (eq gtd-fn (plist-get plist :gtd-fn)))
+                     smart-jump-list)
+         (list `(
+                 :gtd-fn ,gtd-fn
+                 :pop-fn ,pop-fn
+                 :should-gtd ,should-gtd
+                 :heuristic ,heuristic
+                 :async ,async
+                 )))))
 
 (defun smart-jump-bind-jump-keys (mode-map-symbol)
   "Bind keys for GoToDefinition."
