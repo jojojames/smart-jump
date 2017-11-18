@@ -170,7 +170,8 @@ SMART-LIST will be set if this is a continuation of a previous jump."
   (unless (listp modes)
     (setq modes (list modes)))
   (dolist (mode modes)
-    (let ((mode-hook (intern (concat (symbol-name mode) "-hook"))))
+    (let ((mode-hook (intern (format "%S-hook" mode)))
+          (mode-map (intern (format "%S-map" mode))))
       (add-hook mode-hook
                 (lambda ()
                   (setq smart-jump-list
@@ -183,19 +184,22 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                                         :async ,async
                                         ))))
 
-                  ;; FIXME: Make these keys customizable.
-                  (when smart-jump-bind-keys
-                    (let ((map (symbol-value
-                                (intern (concat (symbol-name mode) "-map")))))
-                      (when smart-jump-bind-keys-for-evil
-                        (with-eval-after-load 'evil
-                          (when (fboundp 'evil-define-key*)
-                            (evil-define-key* 'normal map
-                                              (kbd "M-.") 'smart-jump-go
-                                              (kbd "M-,") 'smart-jump-back))))
-                      (define-key map (kbd "M-.") #'smart-jump-go)
-                      (define-key map (kbd "M-,") #'smart-jump-back))))
+                  (smart-jump-bind-jump-keys mode-map))
                 :append-to-hook))))
+
+(defun smart-jump-bind-jump-keys (mode-map-symbol)
+  "Bind keys for GoToDefinition."
+  ;; FIXME: Make these keys customizable.
+  (when smart-jump-bind-keys
+    (let ((map (symbol-value mode-map-symbol)))
+      (when smart-jump-bind-keys-for-evil
+        (with-eval-after-load 'evil
+          (when (fboundp 'evil-define-key*)
+            (evil-define-key* 'normal map
+                              (kbd "M-.") 'smart-jump-go
+                              (kbd "M-,") 'smart-jump-back))))
+      (define-key map (kbd "M-.") #'smart-jump-go)
+      (define-key map (kbd "M-,") #'smart-jump-back))))
 
 (provide 'smart-jump)
 ;;; smart-jump.el ends here
