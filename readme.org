@@ -5,7 +5,7 @@
   do so.
 
   If one method fails, this package will go on to the next one, eventually
-  falling back to [[dumb-jump][dumb-jump]].
+  falling back to [[https://github.com/jacktasia/dumb-jump][dumb-jump]]
 
 * Install
   This is not on melpa yet so it needs to be cloned into a directory on Emacs'
@@ -19,8 +19,8 @@
 
 * Examples
 ** Bare minimum example
-   Sets up smart-jump for js2-mode with default settings. Defaults will use the
-   built-in xref functions first and fall back to dumb-jump if that fails.
+   Sets up smart-jump for [[https://github.com/mooz/js2-mode][js2-mode]] with default settings. Defaults will use the
+   built-in [[https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/xref.el][xref]] functions first and fall back to dumb-jump if that fails.
 
    #+begin_src emacs-lisp :tangle yes
    (smart-jump-register :modes '(js2-mode))
@@ -38,7 +38,7 @@
 ** Supporting Asynchronous Functions
    Sometimes GoToDefinition is written in an asynchronous fashion which makes it
    tricky to fallback to the next GoToDefinition method. This package supports
-   that case. Just set the :async parameter.
+   that case. Just set the ~:async~ parameter.
    #+begin_src emacs-lisp :tangle yes
    (smart-jump-register :modes 'java-mode
                         :gtd-fn 'ggtags-find-tag-dwim
@@ -63,7 +63,7 @@
 
    In this case, the fallback strategy is ->
 
-   rtags-find-symbol-at-point -> ggtags-find-tag-dwim -> dumb-jump-go
+   ~rtags-find-symbol-at-point~ -> ~ggtags-find-tag-dwim~ -> ~dumb-jump-go~
 
 #+begin_src emacs-lisp :tangle yes
   (smart-jump-register :modes '(c-mode)
@@ -86,7 +86,7 @@
                        :async 500)
 #+end_src
 * Needs Work
-  smart-jump-register needs some work around developer ergonomics. It'd be
+  ~smart-jump-register~ needs some work around developer ergonomics. It'd be
   better for it to be more idempotent so configuration changes can be reloaded
   on the fly.
 
@@ -96,4 +96,3 @@
 
   Async code handling is fairly duplicated.
 
-#+LINK: dumb-jump https://github.com/jacktasia/dumb-jump
