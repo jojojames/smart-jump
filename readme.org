@@ -92,8 +92,6 @@
 
   Add more documentation to functions.
 
-  Separate out the lambda inside the hook in smart-jump-register.
-
   Add more fallback methods and/or language support plists.
 
   Async code handling is fairly duplicated.
