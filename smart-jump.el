@@ -175,14 +175,23 @@ SMART-LIST will be set if this is a continuation of a previous jump."
       (add-hook mode-hook
                 (lambda ()
                   (setq smart-jump-list
-                        (append smart-jump-list
-                                (list `(
-                                        :gtd-fn ,gtd-fn
-                                        :pop-fn ,pop-fn
-                                        :should-gtd ,should-gtd
-                                        :heuristic ,heuristic
-                                        :async ,async
-                                        ))))
+                        (append
+                         ;; It's better to figure out how to remove the original
+                         ;; hook from the mode but for now, at the very least,
+                         ;; it's better to remove the old settings upon
+                         ;; calling smart-jump-register again.
+                         ;; It would be better if this updated smart-jump
+                         ;; settings for active modes too.
+                         (seq-remove (lambda (plist)
+                                       (eq gtd-fn (plist-get plist :gtd-fn)))
+                                     smart-jump-list)
+                         (list `(
+                                 :gtd-fn ,gtd-fn
+                                 :pop-fn ,pop-fn
+                                 :should-gtd ,should-gtd
+                                 :heuristic ,heuristic
+                                 :async ,async
+                                 ))))
 
                   (smart-jump-bind-jump-keys mode-map))
                 :append-to-hook))))
