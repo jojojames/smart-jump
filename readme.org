@@ -1,0 +1,101 @@
+#+TITLE: Smart Jump
+
+* About
+  This packages tries to smartly go to definition leveraging several methods to
+  do so.
+
+  If one method fails, this package will go on to the next one, eventually
+  falling back to [[dumb-jump][dumb-jump]].
+
+* Install
+  This is not on melpa yet so it needs to be cloned into a directory on Emacs'
+  load-path.
+
+#+begin_src emacs-lisp :tangle yes
+  (use-package smart-jump
+    :load-path "~/.emacs.d/vendor/smart-jump"
+    :ensure nil)
+#+end_src
+
+* Examples
+** Bare minimum example
+   Sets up smart-jump for js2-mode with default settings. Defaults will use the
+   built-in xref functions first and fall back to dumb-jump if that fails.
+
+   #+begin_src emacs-lisp :tangle yes
+   (smart-jump-register :modes '(js2-mode))
+   #+end_src
+** Multiple modes
+   Sets up smart-jump for both emacs-lisp-mode and lisp-interaction-mode.
+   #+begin_src emacs-lisp :tangle yes
+   (smart-jump-register :modes '(emacs-lisp-mode lisp-interaction-mode)
+                        :gtd-fn 'elisp-slime-nav-find-elisp-thing-at-point
+                        :pop-fn 'pop-tag-mark
+                        :should-gtd t
+                        :heuristic 'error
+                        :async nil)
+   #+end_src
+** Supporting Asynchronous Functions
+   Sometimes GoToDefinition is written in an asynchronous fashion which makes it
+   tricky to fallback to the next GoToDefinition method. This package supports
+   that case. Just set the :async parameter.
+   #+begin_src emacs-lisp :tangle yes
+   (smart-jump-register :modes 'java-mode
+                        :gtd-fn 'ggtags-find-tag-dwim
+                        :pop-fn 'ggtags-prev-mark
+                        :should-gtd t
+                        :heuristic 'point
+                        :async t)
+
+   #+end_src
+
+   #+begin_src emacs-lisp :tangle yes
+   ;; This sets a custom timeout.
+   (smart-jump-register :modes 'csharp-mode
+                        :gtd-fn 'omnisharp-go-to-definition
+                        :pop-fn 'pop-tag-mark
+                        :should-gtd t
+                        :heuristic 'point
+                        :async 500)
+   #+end_src
+** A more complex example
+   Register different GoToDefinition functions with c-mode.
+
+   In this case, the fallback strategy is ->
+
+   rtags-find-symbol-at-point -> ggtags-find-tag-dwim -> dumb-jump-go
+
+#+begin_src emacs-lisp :tangle yes
+  (smart-jump-register :modes '(c-mode)
+                       :gtd-fn 'rtags-find-symbol-at-point
+                       :pop-fn 'rtags-location-stack-back
+                       :should-gtd (lambda ()
+                                     (and
+                                      (fboundp 'rtags-executable-find)
+                                      (rtags-executable-find "rc")
+                                      (cond (useFileManager (rtags-has-filemanager))
+                                            (t (rtags-is-indexed)))))
+                       :heuristic 'point
+                       :async 500)
+
+  (smart-jump-register :modes '(c-mode)
+                       :gtd-fn 'ggtags-find-tag-dwim
+                       :pop-fn 'ggtags-prev-mark
+                       :should-gtd t
+                       :heuristic 'point
+                       :async 500)
+#+end_src
+* Needs Work
+  smart-jump-register needs some work around developer ergonomics. It'd be
+  better for it to be more idempotent so configuration changes can be reloaded
+  on the fly.
+
+  Add more documentation to functions.
+
+  Separate out the lambda inside the hook in smart-jump-register.
+
+  Add more fallback methods and/or language support plists.
+
+  Async code handling is fairly duplicated.
+
+#+LINK: dumb-jump https://github.com/jacktasia/dumb-jump
