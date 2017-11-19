@@ -86,12 +86,12 @@ If this is a number, run the heuristic function after that many ms.")
 (defvar smart-jump-stack '() "Stack used to navigate tags.")
 
 (defvar smart-jump-dumb-fallback '(
-                             :jump-fn dumb-jump-go
-                             :pop-fn dumb-jump-back
-                             :should-jump t
-                             :heuristic point
-                             :async nil
-                             )
+                                   :jump-fn dumb-jump-go
+                                   :pop-fn dumb-jump-back
+                                   :should-jump t
+                                   :heuristic point
+                                   :async nil
+                                   )
   "Fallback settings to use when no other :jump-fn mechanism succeeded.")
 
 ;;;###autoload
