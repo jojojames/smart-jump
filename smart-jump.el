@@ -6,7 +6,7 @@
 ;; Maintainer: James Nguyen <james@jojojames.com>
 ;; URL: https://github.com/jojojames/smart-jump
 ;; Version: 0.0.1
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (dumb-jump "0.5.1"))
 ;; Keywords: tools
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 
 ;;; Code:
 (require 'dumb-jump)
+(require 'seq)
 
 (defgroup smart-jump nil
   "Easily jump to project function and variable definitions using
