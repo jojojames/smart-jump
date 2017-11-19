@@ -80,7 +80,7 @@
    ~rtags-find-symbol-at-point~ -> ~ggtags-find-tag-dwim~ -> ~dumb-jump-go~
 
    - For Finding References
-   rtags-find-all-references-at-point -> ggtags-find-reference -> smart-jump-simple-find-references
+   ~rtags-find-all-references-at-point~ -> ~ggtags-find-reference~ -> ~smart-jump-simple-find-references~
 
    #+begin_src emacs-lisp :tangle yes
   (smart-jump-register :modes '(c-mode c++-mode)
