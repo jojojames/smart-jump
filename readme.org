@@ -96,3 +96,4 @@
 
   Async code handling is fairly duplicated.
 
+  Add support for find-references/find-usages.
