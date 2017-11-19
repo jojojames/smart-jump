@@ -318,14 +318,14 @@ Argument MODE-MAP-SYMBOL Symbol of mode map being registered for `smart-jump'."
 (defun smart-jump-find-references-with-ag ()
   "Use `ag' to find references."
   (interactive)
-  (if (not (fboundp 'ag-project))
-      (message "Install ag to use `smart-jump-simple-find-references-with-ag'.")
-    (ag-project (cond ((use-region-p)
-                       (buffer-substring-no-properties (region-beginning)
-                                                       (region-end)))
-                      ((symbol-at-point)
-                       (substring-no-properties
-                        (symbol-name (symbol-at-point))))))))
+  (if (fboundp 'ag-project)
+      (ag-project (cond ((use-region-p)
+                         (buffer-substring-no-properties (region-beginning)
+                                                         (region-end)))
+                        ((symbol-at-point)
+                         (substring-no-properties
+                          (symbol-name (symbol-at-point))))))
+    (message "Install ag to use `smart-jump-simple-find-references-with-ag'.")))
 
 (defun smart-jump-get-async-wait-time (async)
   "Return the time in seconds for use with waiting for an async jump.
