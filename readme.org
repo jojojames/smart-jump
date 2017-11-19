@@ -11,11 +11,11 @@
   This is not on melpa yet so it needs to be cloned into a directory on Emacs'
   load-path.
 
-#+begin_src emacs-lisp :tangle yes
+  #+begin_src emacs-lisp :tangle yes
   (use-package smart-jump
     :load-path "~/.emacs.d/vendor/smart-jump"
     :ensure nil)
-#+end_src
+  #+end_src
 
 * Examples
 ** Bare minimum example
@@ -58,17 +58,35 @@
                         :heuristic 'point
                         :async 500)
    #+end_src
+** Finding References with Fallback
+   #+begin_src emacs-lisp :tangle yes
+  (smart-jump-register :modes 'tide-mode
+                       :jump-fn 'tide-jump-to-definition
+                       :pop-fn 'tide-jump-back
+                       :refs-fn 'tide-references
+                       :should-jump t
+                       :heuristic 'point
+                       :async t)
+   #+end_src
+
+   Fallback for finding references can be customized with
+   ~smart-jump-simple-find-references-function~.
 ** A more complex example
    Register different GoToDefinition functions with c-mode.
 
    In this case, the fallback strategy is ->
 
+   - For Jumping
    ~rtags-find-symbol-at-point~ -> ~ggtags-find-tag-dwim~ -> ~dumb-jump-go~
 
-#+begin_src emacs-lisp :tangle yes
-  (smart-jump-register :modes '(c-mode)
+   - For Finding References
+   rtags-find-all-references-at-point -> ggtags-find-reference -> smart-jump-simple-find-references
+
+   #+begin_src emacs-lisp :tangle yes
+  (smart-jump-register :modes '(c-mode c++-mode)
                        :jump-fn 'rtags-find-symbol-at-point
                        :pop-fn 'rtags-location-stack-back
+                       :refs-fn 'rtags-find-all-references-at-point
                        :should-jump (lambda ()
                                      (and
                                       (fboundp 'rtags-executable-find)
@@ -78,13 +96,14 @@
                        :heuristic 'point
                        :async 500)
 
-  (smart-jump-register :modes '(c-mode)
+  (smart-jump-register :modes '(c-mode c++-mode)
                        :jump-fn 'ggtags-find-tag-dwim
                        :pop-fn 'ggtags-prev-mark
+                       :refs-fn 'ggtags-find-reference
                        :should-jump t
                        :heuristic 'point
                        :async 500)
-#+end_src
+   #+end_src
 * Needs Work
   ~smart-jump-register~ needs some work around developer ergonomics. It'd be
   better for it to be more idempotent so configuration changes can be reloaded

@@ -64,6 +64,17 @@ Defaults to t."
   :type 'string
   :group 'smart-jump)
 
+(defcustom smart-jump-refs-key "M-?"
+  "Key used for finding references."
+  :type 'string
+  :group 'smart-jump)
+
+(defcustom smart-jump-simple-find-references-function
+  'smart-jump-find-references-with-ag
+  "Function used as fallback when find references fails."
+  :type 'symbol
+  :group 'smart-jump)
+
 (defvar-local smart-jump-list '()
   "
 List of plists that contain metadata to trigger GoToDefinition.
@@ -88,6 +99,7 @@ If this is a number, run the heuristic function after that many ms.")
 (defvar smart-jump-dumb-fallback '(
                                    :jump-fn dumb-jump-go
                                    :pop-fn dumb-jump-back
+                                   :refs-fn smart-jump-simple-find-references
                                    :should-jump t
                                    :heuristic point
                                    :async nil
@@ -168,12 +180,71 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                           (pop smart-jump-stack)
                         'xref-pop-marker-stack)))
 
+;;;###autoload
+(defun smart-jump-references (&optional smart-list)
+  "Find references with fallback."
+  (interactive)
+  (let ((sj-list (or smart-list (append smart-jump-list
+                                        (list smart-jump-dumb-fallback)))))
+    (while sj-list
+      (let* ((entry (car sj-list))
+             (refs-function (plist-get entry :refs-fn))
+             (should-run-jump-function (plist-get entry :should-jump))
+             (heuristic-function (plist-get entry :heuristic))
+             (async (plist-get entry :async)))
+        (setq sj-list (cdr sj-list))
+        (when (or
+               (and (functionp should-run-jump-function)
+                    (funcall should-run-jump-function))
+               should-run-jump-function)
+          (condition-case nil
+              (cond
+               ((eq heuristic-function 'error)
+                ;; We already catch for errors so nothing special
+                ;; needs to be done here.
+                (call-interactively refs-function)
+                (setq sj-list nil))
+               ((eq heuristic-function 'point)
+                (let ((current-point (point)))
+                  (call-interactively refs-function)
+                  (if async
+                      (let ((saved-list sj-list))
+                        (setq sj-list nil) ;; Early exit current function.
+                        (run-with-idle-timer
+                         (/ (if (numberp async)
+                                async
+                              smart-jump-async-wait-time) 1000.0)
+                         nil
+                         (lambda ()
+                           (when (eq (point) current-point)
+                             (smart-jump-references saved-list)))))
+                    (if (eq (point) current-point)
+                        :continue
+                      (setq sj-list nil)))))
+               (:custom-heuristic
+                (call-interactively refs-function)
+                (if async
+                    (let ((saved-list sj-list))
+                      (setq sj-list nil) ;; Early exit current function.
+                      (run-with-idle-timer
+                       (/ (if (numberp async)
+                              async
+                            smart-jump-async-wait-time) 1000.0)
+                       nil
+                       (lambda ()
+                         (unless (funcall heuristic-function)
+                           (smart-jump-references saved-list)))))
+                  (when (funcall heuristic-function)
+                    (setq sj-list nil)))))
+            (error :continue)))))))
+
 ;; FIXME: I'd prefer if this was more idempotent.
 ;; Right now it feels messy to call this multiple times.
 (cl-defun smart-jump-register (&key
                                modes
                                (jump-fn 'xref-find-definitions)
                                (pop-fn 'xref-pop-marker-stack)
+                               (refs-fn 'xref-find-references)
                                (should-jump t)
                                (heuristic 'error)
                                (async nil))
@@ -186,11 +257,16 @@ SMART-LIST will be set if this is a continuation of a previous jump."
       (add-hook mode-hook
                 (lambda ()
                   (smart-jump-update-jump-list
-                   jump-fn pop-fn should-jump heuristic async)
+                   jump-fn pop-fn refs-fn should-jump heuristic async)
                   (smart-jump-bind-jump-keys mode-map))
                 :append-to-hook))))
 
-(defun smart-jump-update-jump-list (jump-fn pop-fn should-jump heuristic async)
+(defun smart-jump-update-jump-list (jump-fn
+                                    pop-fn
+                                    refs-fn
+                                    should-jump
+                                    heuristic
+                                    async)
   "Update `smart-jump-list' with new settings."
   (setq smart-jump-list
         (append
@@ -206,6 +282,7 @@ SMART-LIST will be set if this is a continuation of a previous jump."
          (list `(
                  :jump-fn ,jump-fn
                  :pop-fn ,pop-fn
+                 :refs-fn ,refs-fn
                  :should-jump ,should-jump
                  :heuristic ,heuristic
                  :async ,async
@@ -219,10 +296,30 @@ SMART-LIST will be set if this is a continuation of a previous jump."
         (with-eval-after-load 'evil
           (when (fboundp 'evil-define-key*)
             (evil-define-key* 'normal map
-                              (kbd smart-jump-jump-key) 'smart-jump-go
-                              (kbd smart-jump-pop-key) 'smart-jump-back))))
+                              (kbd smart-jump-jump-key) #'smart-jump-go
+                              (kbd smart-jump-pop-key) #'smart-jump-back
+                              (kbd smart-jump-refs-key) #'smart-jump-references))))
       (define-key map (kbd smart-jump-jump-key) #'smart-jump-go)
-      (define-key map (kbd smart-jump-pop-key) #'smart-jump-back))))
+      (define-key map (kbd smart-jump-pop-key) #'smart-jump-back)
+      (define-key map (kbd smart-jump-refs-key) #'smart-jump-references))))
+
+;; Helpers
+(defun smart-jump-simple-find-references ()
+  "Call `smart-jump-simple-find-references-function'."
+  (interactive)
+  (funcall smart-jump-simple-find-references-function))
+
+(defun smart-jump-find-references-with-ag ()
+  "Use `ag' to find references."
+  (interactive)
+  (if (not (fboundp 'ag-project))
+      (message "Install ag to use `smart-jump-simple-find-references-with-ag'.")
+    (ag-project (cond ((use-region-p)
+                       (buffer-substring-no-properties (region-beginning)
+                                                       (region-end)))
+                      ((symbol-at-point)
+                       (substring-no-properties
+                        (symbol-name (symbol-at-point))))))))
 
 (provide 'smart-jump)
 ;;; smart-jump.el ends here
