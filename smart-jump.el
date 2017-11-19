@@ -58,17 +58,17 @@ Defaults to t."
   "
 List of plists that contain metadata to trigger GoToDefinition.
 
-  '(gtd-fn: pop-fn: should-gtd: heuristic: async:)
+  '(jump-fn: pop-fn: should-jump: heuristic: async:)
 
-gtd-fn: The function to call interactively to trigger go to definition.
+jump-fn: The function to call interactively to trigger go to definition.
 
-pop-fn: The reverse of gtd-function.
+pop-fn: The reverse of jump-function.
 
-should-gtd: Either t, nil or a function that determines if gtd-fn
+should-jump: Either t, nil or a function that determines if jump-fn
 should be triggered.
 
 heuristic Either a recognized symbol or a custom function that will be
-ran after gtd-function is triggered.
+ran after jump-function is triggered.
 
 async: Whether or not to run the heuristic function after a certain time.
 If this is a number, run the heuristic function after that many ms.")
@@ -76,9 +76,9 @@ If this is a number, run the heuristic function after that many ms.")
 (defvar smart-jump-stack '() "Stack used to navigate tags.")
 
 (defvar dumb-jump-fallback '(
-                             :gtd-fn dumb-jump-go
+                             :jump-fn dumb-jump-go
                              :pop-fn dumb-jump-back
-                             :should-gtd t
+                             :should-jump t
                              :heuristic point
                              :async nil
                              )
@@ -94,27 +94,27 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                                         (list dumb-jump-fallback)))))
     (while sj-list
       (let* ((entry (car sj-list))
-             (gtd-function (plist-get entry :gtd-fn))
+             (jump-function (plist-get entry :jump-fn))
              (pop-function (plist-get entry :pop-fn))
-             (should-run-gtd-function (plist-get entry :should-gtd))
+             (should-run-jump-function (plist-get entry :should-jump))
              (heuristic-function (plist-get entry :heuristic))
              (async (plist-get entry :async)))
         (setq sj-list (cdr sj-list))
         (when (or
-               (and (fboundp should-run-gtd-function)
-                    (funcall should-run-gtd-function))
-               should-run-gtd-function)
+               (and (fboundp should-run-jump-function)
+                    (funcall should-run-jump-function))
+               should-run-jump-function)
           (condition-case nil
               (cond
                ((eq heuristic-function 'error)
                 ;; We already catch for errors so nothing special
                 ;; needs to be done here.
-                (call-interactively gtd-function)
+                (call-interactively jump-function)
                 (push pop-function smart-jump-stack)
                 (setq sj-list nil))
                ((eq heuristic-function 'point)
                 (let ((current-point (point)))
-                  (call-interactively gtd-function)
+                  (call-interactively jump-function)
                   (if async
                       (let ((saved-list sj-list))
                         (setq sj-list nil) ;; Early exit current function.
@@ -132,7 +132,7 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                       (push pop-function smart-jump-stack)
                       (setq sj-list nil)))))
                (:custom-heuristic
-                (call-interactively gtd-function)
+                (call-interactively jump-function)
                 (if async
                     (let ((saved-list sj-list))
                       (setq sj-list nil) ;; Early exit current function.
@@ -161,9 +161,9 @@ SMART-LIST will be set if this is a continuation of a previous jump."
 ;; Right now it feels messy to call this multiple times.
 (cl-defun smart-jump-register (&key
                                modes
-                               (gtd-fn 'xref-find-definitions)
+                               (jump-fn 'xref-find-definitions)
                                (pop-fn 'xref-pop-marker-stack)
-                               (should-gtd t)
+                               (should-jump t)
                                (heuristic 'error)
                                (async nil))
   "FIXME: Document argument list."
@@ -175,11 +175,11 @@ SMART-LIST will be set if this is a continuation of a previous jump."
       (add-hook mode-hook
                 (lambda ()
                   (smart-jump-update-jump-list
-                   gtd-fn pop-fn should-gtd heuristic async)
+                   jump-fn pop-fn should-jump heuristic async)
                   (smart-jump-bind-jump-keys mode-map))
                 :append-to-hook))))
 
-(defun smart-jump-update-jump-list (gtd-fn pop-fn should-gtd heuristic async)
+(defun smart-jump-update-jump-list (jump-fn pop-fn should-jump heuristic async)
   "Update `smart-jump-list' with new settings."
   (setq smart-jump-list
         (append
@@ -190,12 +190,12 @@ SMART-LIST will be set if this is a continuation of a previous jump."
          ;; It would be better if this updated smart-jump
          ;; settings for active modes too.
          (seq-remove (lambda (plist)
-                       (eq gtd-fn (plist-get plist :gtd-fn)))
+                       (eq jump-fn (plist-get plist :jump-fn)))
                      smart-jump-list)
          (list `(
-                 :gtd-fn ,gtd-fn
+                 :jump-fn ,jump-fn
                  :pop-fn ,pop-fn
-                 :should-gtd ,should-gtd
+                 :should-jump ,should-jump
                  :heuristic ,heuristic
                  :async ,async
                  )))))

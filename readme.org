@@ -29,9 +29,9 @@
    Sets up smart-jump for both emacs-lisp-mode and lisp-interaction-mode.
    #+begin_src emacs-lisp :tangle yes
    (smart-jump-register :modes '(emacs-lisp-mode lisp-interaction-mode)
-                        :gtd-fn 'elisp-slime-nav-find-elisp-thing-at-point
+                        :jump-fn 'elisp-slime-nav-find-elisp-thing-at-point
                         :pop-fn 'pop-tag-mark
-                        :should-gtd t
+                        :should-jump t
                         :heuristic 'error
                         :async nil)
    #+end_src
@@ -41,9 +41,9 @@
    that case. Just set the ~:async~ parameter.
    #+begin_src emacs-lisp :tangle yes
    (smart-jump-register :modes 'java-mode
-                        :gtd-fn 'ggtags-find-tag-dwim
+                        :jump-fn 'ggtags-find-tag-dwim
                         :pop-fn 'ggtags-prev-mark
-                        :should-gtd t
+                        :should-jump t
                         :heuristic 'point
                         :async t)
 
@@ -52,9 +52,9 @@
    #+begin_src emacs-lisp :tangle yes
    ;; This sets a custom timeout.
    (smart-jump-register :modes 'csharp-mode
-                        :gtd-fn 'omnisharp-go-to-definition
+                        :jump-fn 'omnisharp-go-to-definition
                         :pop-fn 'pop-tag-mark
-                        :should-gtd t
+                        :should-jump t
                         :heuristic 'point
                         :async 500)
    #+end_src
@@ -67,9 +67,9 @@
 
 #+begin_src emacs-lisp :tangle yes
   (smart-jump-register :modes '(c-mode)
-                       :gtd-fn 'rtags-find-symbol-at-point
+                       :jump-fn 'rtags-find-symbol-at-point
                        :pop-fn 'rtags-location-stack-back
-                       :should-gtd (lambda ()
+                       :should-jump (lambda ()
                                      (and
                                       (fboundp 'rtags-executable-find)
                                       (rtags-executable-find "rc")
@@ -79,9 +79,9 @@
                        :async 500)
 
   (smart-jump-register :modes '(c-mode)
-                       :gtd-fn 'ggtags-find-tag-dwim
+                       :jump-fn 'ggtags-find-tag-dwim
                        :pop-fn 'ggtags-prev-mark
-                       :should-gtd t
+                       :should-jump t
                        :heuristic 'point
                        :async 500)
 #+end_src
