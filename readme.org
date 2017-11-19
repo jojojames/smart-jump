@@ -114,5 +114,3 @@
   Add more fallback methods and/or language support plists.
 
   Async code handling is fairly duplicated.
-
-  Add support for find-references/find-usages.
