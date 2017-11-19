@@ -104,7 +104,7 @@
                        :heuristic 'point
                        :async 500)
    #+end_src
-* Needs Work
+* Help Wanted :)
   ~smart-jump-register~ needs some work around developer ergonomics. It'd be
   better for it to be more idempotent so configuration changes can be reloaded
   on the fly.
@@ -112,6 +112,8 @@
   Add more fallback methods and/or language support plists.
 
   Async code handling is fairly duplicated.
+
+  Set up test infrastructure with ert.
 
   Add tests!
 
