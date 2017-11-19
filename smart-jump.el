@@ -54,6 +54,16 @@ Defaults to t."
   :type 'number
   :group 'smart-jump)
 
+(defcustom smart-jump-jump-key "M-."
+  "Key used for binding jump."
+  :type 'string
+  :group 'smart-jump)
+
+(defcustom smart-jump-pop-key "M-,"
+  "Key used for binding jump."
+  :type 'string
+  :group 'smart-jump)
+
 (defvar-local smart-jump-list '()
   "
 List of plists that contain metadata to trigger GoToDefinition.
@@ -202,17 +212,16 @@ SMART-LIST will be set if this is a continuation of a previous jump."
 
 (defun smart-jump-bind-jump-keys (mode-map-symbol)
   "Bind keys for GoToDefinition."
-  ;; FIXME: Make these keys customizable.
   (when smart-jump-bind-keys
     (let ((map (symbol-value mode-map-symbol)))
       (when smart-jump-bind-keys-for-evil
         (with-eval-after-load 'evil
           (when (fboundp 'evil-define-key*)
             (evil-define-key* 'normal map
-                              (kbd "M-.") 'smart-jump-go
-                              (kbd "M-,") 'smart-jump-back))))
-      (define-key map (kbd "M-.") #'smart-jump-go)
-      (define-key map (kbd "M-,") #'smart-jump-back))))
+                              (kbd smart-jump-jump-key) 'smart-jump-go
+                              (kbd smart-jump-pop-key) 'smart-jump-back))))
+      (define-key map (kbd smart-jump-jump-key) #'smart-jump-go)
+      (define-key map (kbd smart-jump-pop-key) #'smart-jump-back))))
 
 (provide 'smart-jump)
 ;;; smart-jump.el ends here
