@@ -141,9 +141,7 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                       (let ((saved-list sj-list))
                         (setq sj-list nil) ;; Early exit current function.
                         (run-with-idle-timer
-                         (/ (if (numberp async)
-                                async
-                              smart-jump-async-wait-time) 1000.0)
+                         (smart-jump-get-async-wait-time async)
                          nil
                          (lambda ()
                            (if (eq (point) current-point)
@@ -159,9 +157,7 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                     (let ((saved-list sj-list))
                       (setq sj-list nil) ;; Early exit current function.
                       (run-with-idle-timer
-                       (/ (if (numberp async)
-                              async
-                            smart-jump-async-wait-time) 1000.0)
+                       (smart-jump-get-async-wait-time async)
                        nil
                        (lambda ()
                          (if (funcall heuristic-function)
@@ -211,9 +207,7 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                       (let ((saved-list sj-list))
                         (setq sj-list nil) ;; Early exit current function.
                         (run-with-idle-timer
-                         (/ (if (numberp async)
-                                async
-                              smart-jump-async-wait-time) 1000.0)
+                         (smart-jump-get-async-wait-time async)
                          nil
                          (lambda ()
                            (when (eq (point) current-point)
@@ -227,9 +221,7 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                     (let ((saved-list sj-list))
                       (setq sj-list nil) ;; Early exit current function.
                       (run-with-idle-timer
-                       (/ (if (numberp async)
-                              async
-                            smart-jump-async-wait-time) 1000.0)
+                       (smart-jump-get-async-wait-time async)
                        nil
                        (lambda ()
                          (unless (funcall heuristic-function)
@@ -320,6 +312,13 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                       ((symbol-at-point)
                        (substring-no-properties
                         (symbol-name (symbol-at-point))))))))
+
+(defun smart-jump-get-async-wait-time (async)
+  "Return the time in seconds for use with waiting for an async jump.
+If ASYNC is a number, use to determine the wait time."
+  (/ (if (numberp async)
+         async
+       smart-jump-async-wait-time) 1000.0))
 
 (provide 'smart-jump)
 ;;; smart-jump.el ends here
