@@ -75,14 +75,14 @@ If this is a number, run the heuristic function after that many ms.")
 
 (defvar smart-jump-stack '() "Stack used to navigate tags.")
 
-(defvar dumb-jump-fallback '(
+(defvar smart-jump-dumb-fallback '(
                              :jump-fn dumb-jump-go
                              :pop-fn dumb-jump-back
                              :should-jump t
                              :heuristic point
                              :async nil
                              )
-  "Fallback settings to use when no other GoToDefinition mechanism succeeded.")
+  "Fallback settings to use when no other :jump-fn mechanism succeeded.")
 
 ;;;###autoload
 (defun smart-jump-go (&optional smart-list)
@@ -91,7 +91,7 @@ If this is a number, run the heuristic function after that many ms.")
 SMART-LIST will be set if this is a continuation of a previous jump."
   (interactive)
   (let ((sj-list (or smart-list (append smart-jump-list
-                                        (list dumb-jump-fallback)))))
+                                        (list smart-jump-dumb-fallback)))))
     (while sj-list
       (let* ((entry (car sj-list))
              (jump-function (plist-get entry :jump-fn))
