@@ -101,7 +101,7 @@ SMART-LIST will be set if this is a continuation of a previous jump."
              (async (plist-get entry :async)))
         (setq sj-list (cdr sj-list))
         (when (or
-               (and (fboundp should-run-jump-function)
+               (and (functionp should-run-jump-function)
                     (funcall should-run-jump-function))
                should-run-jump-function)
           (condition-case nil
