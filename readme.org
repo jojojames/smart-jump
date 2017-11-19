@@ -109,8 +109,10 @@
   better for it to be more idempotent so configuration changes can be reloaded
   on the fly.
 
-  Add more documentation to functions.
-
   Add more fallback methods and/or language support plists.
 
   Async code handling is fairly duplicated.
+
+  Add tests!
+
+  Set up CI.

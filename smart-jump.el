@@ -76,23 +76,14 @@ Defaults to t."
   :group 'smart-jump)
 
 (defvar-local smart-jump-list '()
-  "
-List of plists that contain metadata to trigger GoToDefinition.
+  "List of plists that contain metadata to trigger jump to definition
+or find references.
 
-  '(jump-fn: pop-fn: should-jump: heuristic: async:)
+The list comprises of argument lists of this format.
 
-jump-fn: The function to call interactively to trigger go to definition.
+  '(jump-fn: pop-fn: refs-fn: should-jump: heuristic: async:)
 
-pop-fn: The reverse of jump-function.
-
-should-jump: Either t, nil or a function that determines if jump-fn
-should be triggered.
-
-heuristic Either a recognized symbol or a custom function that will be
-ran after jump-function is triggered.
-
-async: Whether or not to run the heuristic function after a certain time.
-If this is a number, run the heuristic function after that many ms.")
+See `smart-jump-register' for more details.")
 
 (defvar smart-jump-stack '() "Stack used to navigate tags.")
 
@@ -178,7 +169,8 @@ SMART-LIST will be set if this is a continuation of a previous jump."
 
 ;;;###autoload
 (defun smart-jump-references (&optional smart-list)
-  "Find references with fallback."
+  "Find references with fallback.
+Optional argument SMART-LIST This will be non-nil of continuation of previous call to `smart-jump-references'."
   (interactive)
   (let ((sj-list (or smart-list (append smart-jump-list
                                         (list smart-jump-dumb-fallback)))))
@@ -240,7 +232,22 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                                (should-jump t)
                                (heuristic 'error)
                                (async nil))
-  "FIXME: Document argument list."
+  "Register mode for use with `smart-jump'.
+
+JUMP-FN: The function to call interactively to trigger go to definition.
+
+POP-FN: The reverse of jump-function.
+
+REFS-FN: Function used for finding references.
+
+SHOULD-JUMP: Either t, nil or a function that determines if jump-fn
+should be triggered.
+
+HEURISTIC: Either a recognized symbol or a custom function that will be
+ran after jump-function is triggered.
+
+ASYNC: Whether or not to run the heuristic function after a certain time.
+If this is a number, run the heuristic function after that many ms."
   (unless (listp modes)
     (setq modes (list modes)))
   (dolist (mode modes)
@@ -259,7 +266,13 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                                     should-jump
                                     heuristic
                                     async)
-  "Update `smart-jump-list' with new settings."
+  "Update `smart-jump-list' with new settings.
+Argument JUMP-FN Jump
+Argument POP-FN Pop
+Argument REFS-FN Find References
+Argument SHOULD-JUMP Should Jump
+Argument HEURISTIC Heuristic
+Argument ASYNC Async"
   (setq smart-jump-list
         (append
          ;; It's better to figure out how to remove the original
@@ -281,7 +294,8 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                  )))))
 
 (defun smart-jump-bind-jump-keys (mode-map-symbol)
-  "Bind keys for GoToDefinition."
+  "Bind keys for GoToDefinition.
+Argument MODE-MAP-SYMBOL Symbol of mode map being registered for `smart-jump'."
   (when smart-jump-bind-keys
     (let ((map (symbol-value mode-map-symbol)))
       (when smart-jump-bind-keys-for-evil
