@@ -156,6 +156,7 @@ SMART-LIST will be set if this is a continuation of a previous jump."
                              (push pop-function smart-jump-stack)
                            (smart-jump-go saved-list)))))
                   (when (funcall heuristic-function)
+                    (setq sj-list nil)
                     (push pop-function smart-jump-stack)))))
             (error :continue)))))))
 
