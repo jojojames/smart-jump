@@ -93,4 +93,30 @@ strategies because it should have already been added in the first call."
     (smart-jump-references smart-jump-list)
     (should (equal counter 2))))
 
+(ert-deftest smart-jump-:should-jump:-is-false-uses-fallback ()
+  "When the 1 -> N-1 jump's :should-jump is false, it should skip that jump
+and use the fallback instead."
+  (defvar smart-jump-fallback-counter nil)
+  (defvar smart-jump-jump-counter nil)
+  (let* ((counter 0)
+         (smart-jump-jump-counter (lambda ()
+                                    (interactive)
+                                    ;; Test fails if this is hit.
+                                    (setq counter -1)))
+         (smart-jump-list `((
+                             :jump-fn ,smart-jump-jump-counter
+                             :refs-fn ,smart-jump-jump-counter
+                             :should-jump nil
+                             :heuristic error
+                             )))
+         (smart-jump-fallback-counter (lambda ()
+                                        (interactive)
+                                        (setq counter (1+ counter))))
+         (smart-jump-simple-jump-function smart-jump-fallback-counter)
+         (smart-jump-simple-find-references-function
+          smart-jump-fallback-counter))
+    (call-interactively #'smart-jump-go)
+    (call-interactively #'smart-jump-references)
+    (should (equal counter 2))))
+
 ;;; smart-jump-test.el ends here
