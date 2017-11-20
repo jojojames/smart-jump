@@ -88,11 +88,10 @@
                        :pop-fn 'rtags-location-stack-back
                        :refs-fn 'rtags-find-all-references-at-point
                        :should-jump (lambda ()
-                                     (and
-                                      (fboundp 'rtags-executable-find)
-                                      (rtags-executable-find "rc")
-                                      (cond (useFileManager (rtags-has-filemanager))
-                                            (t (rtags-is-indexed)))))
+                                      (and
+                                       (fboundp 'rtags-executable-find)
+                                       (rtags-executable-find "rc")
+                                       (rtags-is-indexed)))
                        :heuristic 'point
                        :async 500)
 
