@@ -115,5 +115,3 @@
   Async code handling is fairly duplicated.
 
   Add tests!
-
-  Set up CI.
