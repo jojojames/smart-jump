@@ -1,5 +1,7 @@
 #+TITLE: Smart Jump
 
+[[https://travis-ci.org/jojojames/smart-jump][file:https://travis-ci.org/jojojames/smart-jump.svg?branch=master]]
+
 * About
   This packages tries to smartly go to definition leveraging several methods to
   do so.
