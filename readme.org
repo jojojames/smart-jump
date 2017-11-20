@@ -113,8 +113,6 @@
 
   Async code handling is fairly duplicated.
 
-  Set up test infrastructure with ert.
-
   Add tests!
 
   Set up CI.
