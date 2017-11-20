@@ -4,22 +4,22 @@
 (ert-deftest smart-jump-no-registration-uses-fallbacks ()
   "When mode has not been registered, calling `smart-jump' triggers fallback
 functions."
-  (defvar smart-jump-increment-counter nil)
+  (defvar smart-jump-jump-counter nil)
   (let* ((smart-jump-list nil) ;; nil --> no registration.
          (counter 0)
-         (smart-jump-increment-counter (lambda ()
+         (smart-jump-jump-counter (lambda ()
                                          (interactive)
                                          (setq counter (1+ counter))))
-         (smart-jump-simple-jump-function smart-jump-increment-counter)
+         (smart-jump-simple-jump-function smart-jump-jump-counter)
          (smart-jump-simple-find-references-function
-          smart-jump-increment-counter))
+          smart-jump-jump-counter))
     (call-interactively #'smart-jump-go)
     (call-interactively #'smart-jump-references)
     (should (equal counter 2))))
 
 (ert-deftest smart-jump-with-errors-uses-fallbacks ()
   "When first to N-1 `smart-jump's throws an error, fallbacks are triggered."
-  (defvar smart-jump-increment-counter nil)
+  (defvar smart-jump-jump-counter nil)
   (let* ((smart-jump-list '((
                              :jump-fn (lambda () (interactive) (throw 'error))
                              :refs-fn (lambda () (interactive (throw 'error)))
@@ -27,11 +27,11 @@ functions."
                              :heuristic 'error
                              )))
          (counter 0)
-         (smart-jump-increment-counter (lambda ()
+         (smart-jump-jump-counter (lambda ()
                                          (interactive)
                                          (setq counter (1+ counter))))
-         (smart-jump-simple-jump-function smart-jump-increment-counter)
-         (smart-jump-simple-find-references-function smart-jump-increment-counter))
+         (smart-jump-simple-jump-function smart-jump-jump-counter)
+         (smart-jump-simple-find-references-function smart-jump-jump-counter))
     (call-interactively #'smart-jump-go)
     (call-interactively #'smart-jump-references)
     (should (equal counter 2))))
@@ -40,14 +40,14 @@ functions."
   "When there are no errors, jumps in smart-jump-list are called successfully.
 No fallbacks are triggered."
   (defvar smart-jump-fallback-counter nil)
-  (defvar smart-jump-increment-counter nil)
+  (defvar smart-jump-jump-counter nil)
   (let* ((counter 0)
-         (smart-jump-increment-counter (lambda ()
+         (smart-jump-jump-counter (lambda ()
                                          (interactive)
                                          (setq counter (1+ counter))))
          (smart-jump-list `((
-                             :jump-fn ,smart-jump-increment-counter
-                             :refs-fn ,smart-jump-increment-counter
+                             :jump-fn ,smart-jump-jump-counter
+                             :refs-fn ,smart-jump-jump-counter
                              :should-jump t
                              :heuristic error
                              )))
@@ -70,14 +70,14 @@ For example ,when continuing `smart-jump-references' (say from an async
 strategy), we don't want to add the callback to the list of `smart-jump'
 strategies because it should have already been added in the first call."
   (defvar smart-jump-fallback-counter nil)
-  (defvar smart-jump-increment-counter nil)
+  (defvar smart-jump-jump-counter nil)
   (let* ((counter 0)
-         (smart-jump-increment-counter (lambda ()
+         (smart-jump-jump-counter (lambda ()
                                          (interactive)
                                          (setq counter (1+ counter))))
          (smart-jump-list `((
-                             :jump-fn ,smart-jump-increment-counter
-                             :refs-fn ,smart-jump-increment-counter
+                             :jump-fn ,smart-jump-jump-counter
+                             :refs-fn ,smart-jump-jump-counter
                              :should-jump t
                              :heuristic error
                              )))
