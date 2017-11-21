@@ -262,6 +262,12 @@ If this is a number, run the heuristic function after that many ms."
   (unless (listp modes)
     (setq modes (list modes)))
   (dolist (mode modes)
+    (dolist (b (buffer-list))
+      (with-current-buffer b
+        (when (or (bound-and-true-p mode) ;; `minor-mode'
+                  (eq major-mode mode)) ;; `major-mode'
+          (smart-jump-update-jump-list
+           jump-fn pop-fn refs-fn should-jump heuristic async))))
     (let ((mode-hook (intern (format "%S-hook" mode)))
           (mode-map (intern (format "%S-map" mode))))
       (add-hook mode-hook

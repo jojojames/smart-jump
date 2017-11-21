@@ -1,6 +1,14 @@
 ;;; smart-jump-test.el --- Tests for smart-jump -*- lexical-binding: t -*-
 (require 'smart-jump)
 
+(defun smart-jump-set-smart-jump-list-for-matching-mode (mode list)
+  "Set `smart-jump-list' with LIST for every buffer that matches MODE."
+  (dolist (b (buffer-list))
+    (with-current-buffer b
+      (when (or (bound-and-true-p mode) ;; `minor-mode'
+                (eq major-mode mode)) ;; `major-mode'
+        (setq smart-jump-list list)))))
+
 (ert-deftest smart-jump-no-registration-uses-fallbacks ()
   "When mode has not been registered, calling `smart-jump' triggers fallback
 functions."
@@ -118,5 +126,25 @@ and use the fallback instead."
     (call-interactively #'smart-jump-go)
     (call-interactively #'smart-jump-references)
     (should (equal counter 2))))
+
+(ert-deftest smart-jump-register-updates-current-mode ()
+  "When calling `smart-jump-register', current buffer's `smart-jump-list'
+should be updated."
+  (defvar smart-jump-old-smart-jump-list nil)
+  (dolist (b (buffer-list))
+    (with-current-buffer b
+      (when (eq major-mode 'emacs-lisp-mode)
+        ;; Keep track of `smart-jump-list' so we can reset the state back
+        ;; to normal after the test runs.
+        (setq smart-jump-old-smart-jump-list smart-jump-list))))
+  (with-temp-buffer
+    (let ((major-mode 'emacs-lisp-mode)
+          (smart-jump-list '()))
+      (smart-jump-register :modes 'emacs-lisp-mode
+                           :jump-fn 'dummy)
+      (should (equal (plist-get (car smart-jump-list) :jump-fn) 'dummy))
+      ;; Reset the state back...
+      (smart-jump-set-smart-jump-list-for-matching-mode
+       'emacs-lisp-mode smart-jump-old-smart-jump-list))))
 
 ;;; smart-jump-test.el ends here
