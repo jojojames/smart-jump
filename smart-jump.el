@@ -98,14 +98,15 @@ See `smart-jump-register' for more details.")
 
 (defvar smart-jump-stack '() "Stack used to navigate tags.")
 
-(defvar smart-jump-simple-fallback '(
-                                     :jump-fn smart-jump-simple-jump-to-definition
-                                     :pop-fn smart-jump-simple-pop-from-definition
-                                     :refs-fn smart-jump-simple-find-references
-                                     :should-jump t
-                                     :heuristic point
-                                     :async nil
-                                     )
+(defvar smart-jump-simple-fallback
+  '(
+    :jump-fn smart-jump-simple-jump-to-definition
+    :pop-fn smart-jump-simple-pop-from-definition
+    :refs-fn smart-jump-simple-find-references
+    :should-jump t
+    :heuristic point
+    :async nil
+    )
   "Fallback settings to use when no other :jump-fn mechanism succeeded.")
 
 ;;;###autoload
@@ -181,7 +182,8 @@ SMART-LIST will be set if this is a continuation of a previous jump."
 ;;;###autoload
 (defun smart-jump-references (&optional smart-list)
   "Find references with fallback.
-Optional argument SMART-LIST This will be non-nil of continuation of previous call to `smart-jump-references'."
+Optional argument SMART-LIST This will be non-nil of continuation of previous
+call to `smart-jump-references'."
   (interactive)
   (let ((sj-list (or smart-list (append smart-jump-list
                                         (list smart-jump-simple-fallback)))))

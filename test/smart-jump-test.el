@@ -16,8 +16,8 @@ functions."
   (let* ((smart-jump-list nil) ;; nil --> no registration.
          (counter 0)
          (smart-jump-jump-counter (lambda ()
-                                         (interactive)
-                                         (setq counter (1+ counter))))
+                                    (interactive)
+                                    (setq counter (1+ counter))))
          (smart-jump-simple-jump-function smart-jump-jump-counter)
          (smart-jump-simple-find-references-function
           smart-jump-jump-counter))
@@ -36,8 +36,8 @@ functions."
                              )))
          (counter 0)
          (smart-jump-jump-counter (lambda ()
-                                         (interactive)
-                                         (setq counter (1+ counter))))
+                                    (interactive)
+                                    (setq counter (1+ counter))))
          (smart-jump-simple-jump-function smart-jump-jump-counter)
          (smart-jump-simple-find-references-function smart-jump-jump-counter))
     (call-interactively #'smart-jump-go)
@@ -51,8 +51,8 @@ No fallbacks are triggered."
   (defvar smart-jump-jump-counter nil)
   (let* ((counter 0)
          (smart-jump-jump-counter (lambda ()
-                                         (interactive)
-                                         (setq counter (1+ counter))))
+                                    (interactive)
+                                    (setq counter (1+ counter))))
          (smart-jump-list `((
                              :jump-fn ,smart-jump-jump-counter
                              :refs-fn ,smart-jump-jump-counter
@@ -81,8 +81,8 @@ strategies because it should have already been added in the first call."
   (defvar smart-jump-jump-counter nil)
   (let* ((counter 0)
          (smart-jump-jump-counter (lambda ()
-                                         (interactive)
-                                         (setq counter (1+ counter))))
+                                    (interactive)
+                                    (setq counter (1+ counter))))
          (smart-jump-list `((
                              :jump-fn ,smart-jump-jump-counter
                              :refs-fn ,smart-jump-jump-counter
