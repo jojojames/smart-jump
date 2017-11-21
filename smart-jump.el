@@ -235,8 +235,6 @@ call to `smart-jump-references'."
                     (setq sj-list nil)))))
             (error :continue)))))))
 
-;; FIXME: I'd prefer if this was more idempotent.
-;; Right now it feels messy to call this multiple times.
 (cl-defun smart-jump-register (&key
                                modes
                                (jump-fn 'xref-find-definitions)
@@ -273,10 +271,15 @@ If this is a number, run the heuristic function after that many ms."
     (let ((mode-hook (intern (format "%S-hook" mode)))
           (mode-map (intern (format "%S-map" mode))))
       (add-hook mode-hook
-                (lambda ()
-                  (smart-jump-update-jump-list
-                   jump-fn pop-fn refs-fn should-jump heuristic async)
-                  (smart-jump-bind-jump-keys mode-map))
+                ;; Give the hook function a name so we don't add multiple
+                ;; anonymous function to a mode hook everytime
+                ;; `smart-jump-register' is called.
+                (defalias (intern (format "smart-jump-%S" mode-hook))
+                  (function
+                   (lambda ()
+                     (smart-jump-bind-jump-keys mode-map)
+                     (smart-jump-update-jump-list
+                      jump-fn pop-fn refs-fn should-jump heuristic async))))
                 :append-to-hook))))
 
 (defun smart-jump-update-jump-list (jump-fn

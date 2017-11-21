@@ -9,6 +9,13 @@
                 (eq major-mode mode)) ;; `major-mode'
         (setq smart-jump-list list)))))
 
+(defun smart-jump-get-smart-jump-list-for-mode (mode)
+  (defvar smart-jump-smart-jump-list-result nil)
+  (dolist (b (buffer-list) smart-jump-smart-jump-list-result)
+    (with-current-buffer b
+      (when (eq major-mode mode)
+        (setq smart-jump-smart-jump-list-result smart-jump-list)))))
+
 (ert-deftest smart-jump-no-registration-uses-fallbacks ()
   "When mode has not been registered, calling `smart-jump' triggers fallback
 functions."
@@ -130,13 +137,11 @@ and use the fallback instead."
 (ert-deftest smart-jump-register-updates-current-mode ()
   "When calling `smart-jump-register', current buffer's `smart-jump-list'
 should be updated."
+  ;; Keep track of `smart-jump-list' so we can reset the state back
+  ;; to normal after the test runs.
   (defvar smart-jump-old-smart-jump-list nil)
-  (dolist (b (buffer-list))
-    (with-current-buffer b
-      (when (eq major-mode 'emacs-lisp-mode)
-        ;; Keep track of `smart-jump-list' so we can reset the state back
-        ;; to normal after the test runs.
-        (setq smart-jump-old-smart-jump-list smart-jump-list))))
+  (setq smart-jump-old-smart-jump-list
+        (smart-jump-get-smart-jump-list-for-mode 'emacs-lisp-mode))
   (with-temp-buffer
     (let ((major-mode 'emacs-lisp-mode)
           (smart-jump-list '()))
@@ -144,6 +149,26 @@ should be updated."
                            :jump-fn 'dummy)
       (should (equal (plist-get (car smart-jump-list) :jump-fn) 'dummy))
       ;; Reset the state back...
+      (smart-jump-set-smart-jump-list-for-matching-mode
+       'emacs-lisp-mode smart-jump-old-smart-jump-list))))
+
+(ert-deftest smart-jump-register-adds-hook-only-once ()
+  "When calling `smart-jump-register' multiple times, only one hook should
+be added."
+  ;; Keep track of `smart-jump-list' so we can reset the state back
+  ;; to normal after the test runs.
+  (defvar smart-jump-old-smart-jump-list nil)
+  (setq smart-jump-old-smart-jump-list
+        (smart-jump-get-smart-jump-list-for-mode 'emacs-lisp-mode))
+  (with-temp-buffer
+    (let ((major-mode 'emacs-lisp-mode)
+          (emacs-lisp-mode-hook nil))
+      (smart-jump-register :modes 'emacs-lisp-mode
+                           :jump-fn 'dummy)
+      (should (equal (length emacs-lisp-mode-hook) 1))
+      (smart-jump-register :modes 'emacs-lisp-mode
+                           :jump-fn 'dummy)
+      (should (equal (length emacs-lisp-mode-hook) 1))
       (smart-jump-set-smart-jump-list-for-matching-mode
        'emacs-lisp-mode smart-jump-old-smart-jump-list))))
 

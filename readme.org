@@ -106,12 +106,15 @@
                        :async 500)
    #+end_src
 * Help Wanted :)
-  ~smart-jump-register~ needs some work around developer ergonomics. It'd be
-  better for it to be more idempotent so configuration changes can be reloaded
-  on the fly.
-
   Add more fallback methods and/or language support plists.
 
   Async code handling is fairly duplicated.
 
   Add tests!
+* Running Tests
+  #+begin_src sh :tangle yes
+  cask
+  make test
+  make lint
+  make compile
+  #+end_src
