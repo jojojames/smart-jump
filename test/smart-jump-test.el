@@ -172,4 +172,24 @@ be added."
       (smart-jump-set-smart-jump-list-for-matching-mode
        'emacs-lisp-mode smart-jump-old-smart-jump-list))))
 
+(ert-deftest smart-jump-register-adds-one-hook-per-jump-definition ()
+  "Register a `smart-jump' using :jump-fn as the key. A mode can contain many
+:jump-fn's."
+  ;; Keep track of `smart-jump-list' so we can reset the state back
+  ;; to normal after the test runs.
+  (defvar smart-jump-old-smart-jump-list nil)
+  (setq smart-jump-old-smart-jump-list
+        (smart-jump-get-smart-jump-list-for-mode 'emacs-lisp-mode))
+  (with-temp-buffer
+    (let ((major-mode 'emacs-lisp-mode)
+          (emacs-lisp-mode-hook nil))
+      (smart-jump-register :modes 'emacs-lisp-mode
+                           :jump-fn 'dummy)
+      (should (equal (length emacs-lisp-mode-hook) 1))
+      (smart-jump-register :modes 'emacs-lisp-mode
+                           :jump-fn 'dummy-2)
+      (should (equal (length emacs-lisp-mode-hook) 2))
+      (smart-jump-set-smart-jump-list-for-matching-mode
+       'emacs-lisp-mode smart-jump-old-smart-jump-list))))
+
 ;;; smart-jump-test.el ends here

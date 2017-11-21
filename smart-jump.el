@@ -274,7 +274,7 @@ If this is a number, run the heuristic function after that many ms."
                 ;; Give the hook function a name so we don't add multiple
                 ;; anonymous function to a mode hook everytime
                 ;; `smart-jump-register' is called.
-                (defalias (intern (format "smart-jump-%S" mode-hook))
+                (defalias (intern (format "smart-jump-setup-%S-%S" mode jump-fn))
                   (function
                    (lambda ()
                      (smart-jump-bind-jump-keys mode-map)
