@@ -193,4 +193,24 @@ be added."
       (smart-jump-set-smart-jump-list-for-matching-mode
        'emacs-lisp-mode smart-jump-old-smart-jump-list))))
 
+(ert-deftest smart-jump-register-registrations-are-sorted ()
+  "`smart-jump's registered are sorted according to their :order.
+Higher :order numbers should be sorted up front."
+  (defvar smart-jump-old-smart-jump-list nil)
+  (setq smart-jump-old-smart-jump-list
+        (smart-jump-get-smart-jump-list-for-mode 'emacs-lisp-mode))
+  (with-temp-buffer
+    (let ((major-mode 'emacs-lisp-mode)
+          (smart-jump-list '())
+          (emacs-lisp-mode-hook nil))
+      (smart-jump-register :modes 'emacs-lisp-mode
+                           :jump-fn 'dummy
+                           :order 1)
+      (smart-jump-register :modes 'emacs-lisp-mode
+                           :jump-fn 'dummy-2
+                           :order 2)
+      (should (equal (plist-get (car smart-jump-list) :jump-fn) 'dummy-2))
+      (smart-jump-set-smart-jump-list-for-matching-mode
+       'emacs-lisp-mode smart-jump-old-smart-jump-list))))
+
 ;;; smart-jump-test.el ends here

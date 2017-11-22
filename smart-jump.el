@@ -55,6 +55,14 @@ Defaults to t."
   :type 'number
   :group 'smart-jump)
 
+(defcustom smart-jump-default-order-weight 20
+  "The default weight applied to each `smart-jump' registration.
+
+This ordering is used when determining which `smart-jump' strategy to use
+first."
+  :type 'number
+  :group 'smart-jump)
+
 (defcustom smart-jump-jump-key "M-."
   "Key used for binding jump."
   :type 'string
@@ -242,7 +250,8 @@ call to `smart-jump-references'."
                                (refs-fn 'xref-find-references)
                                (should-jump t)
                                (heuristic 'error)
-                               (async nil))
+                               (async nil)
+                               (order smart-jump-default-order-weight))
   "Register mode for use with `smart-jump'.
 
 JUMP-FN: The function to call interactively to trigger go to definition.
@@ -258,7 +267,10 @@ HEURISTIC: Either a recognized symbol or a custom function that will be
 ran after jump-function is triggered.
 
 ASYNC: Whether or not to run the heuristic function after a certain time.
-If this is a number, run the heuristic function after that many ms."
+If this is a number, run the heuristic function after that many ms.
+
+ORDER: The weight applied to each JUMP-FN. This is used to determine which
+fallback strategy is used first. Higher is better."
   (unless (listp modes)
     (setq modes (list modes)))
   (dolist (mode modes)
@@ -267,7 +279,7 @@ If this is a number, run the heuristic function after that many ms."
         (when (or (bound-and-true-p mode) ;; `minor-mode'
                   (eq major-mode mode)) ;; `major-mode'
           (smart-jump-update-jump-list
-           jump-fn pop-fn refs-fn should-jump heuristic async))))
+           jump-fn pop-fn refs-fn should-jump heuristic async order))))
     (let ((mode-hook (intern (format "%S-hook" mode)))
           (mode-map (intern (format "%S-map" mode))))
       (add-hook mode-hook
@@ -279,7 +291,7 @@ If this is a number, run the heuristic function after that many ms."
                    (lambda ()
                      (smart-jump-bind-jump-keys mode-map)
                      (smart-jump-update-jump-list
-                      jump-fn pop-fn refs-fn should-jump heuristic async))))
+                      jump-fn pop-fn refs-fn should-jump heuristic async order))))
                 :append-to-hook))))
 
 (defun smart-jump-update-jump-list (jump-fn
@@ -287,7 +299,8 @@ If this is a number, run the heuristic function after that many ms."
                                     refs-fn
                                     should-jump
                                     heuristic
-                                    async)
+                                    async
+                                    order)
   "Update `smart-jump-list' with new settings.
 Argument JUMP-FN Jump
 Argument POP-FN Pop
@@ -296,24 +309,35 @@ Argument SHOULD-JUMP Should Jump
 Argument HEURISTIC Heuristic
 Argument ASYNC Async"
   (setq smart-jump-list
-        (append
-         ;; It's better to figure out how to remove the original
-         ;; hook from the mode but for now, at the very least,
-         ;; it's better to remove the old settings upon
-         ;; calling smart-jump-register again.
-         ;; It would be better if this updated smart-jump
-         ;; settings for active modes too.
-         (seq-remove (lambda (plist)
-                       (eq jump-fn (plist-get plist :jump-fn)))
-                     smart-jump-list)
-         (list `(
-                 :jump-fn ,jump-fn
-                 :pop-fn ,pop-fn
-                 :refs-fn ,refs-fn
-                 :should-jump ,should-jump
-                 :heuristic ,heuristic
-                 :async ,async
-                 )))))
+        (sort
+         (append
+          ;; It's better to figure out how to remove the original
+          ;; hook from the mode but for now, at the very least,
+          ;; it's better to remove the old settings upon
+          ;; calling smart-jump-register again.
+          ;; It would be better if this updated smart-jump
+          ;; settings for active modes too.
+          (seq-remove (lambda (plist)
+                        (eq jump-fn (plist-get plist :jump-fn)))
+                      smart-jump-list)
+          (list `(
+                  :jump-fn ,jump-fn
+                  :pop-fn ,pop-fn
+                  :refs-fn ,refs-fn
+                  :should-jump ,should-jump
+                  :heuristic ,heuristic
+                  :async ,async
+                  :order ,order
+                  )))
+         (lambda (first second)
+           ;; Extra defensive.. around upgrades...
+           ;; Only (> first-order second-order) is truly needed.
+           ;; If the list is '(2 5 3 1), it should become '(5 3 2 1).
+           (let ((first-order (plist-get first :order))
+                 (second-order (plist-get second :order)))
+             (if (or (null first-order) (null second-order))
+                 nil
+               (> first-order second-order)))))))
 
 (defun smart-jump-bind-jump-keys (mode-map-symbol)
   "Bind keys for GoToDefinition.
