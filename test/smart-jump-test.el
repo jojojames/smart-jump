@@ -195,7 +195,7 @@ be added."
 
 (ert-deftest smart-jump-register-registrations-are-sorted ()
   "`smart-jump's registered are sorted according to their :order.
-Higher :order numbers should be sorted up front."
+Lower :order numbers should be sorted up front."
   (defvar smart-jump-old-smart-jump-list nil)
   (setq smart-jump-old-smart-jump-list
         (smart-jump-get-smart-jump-list-for-mode 'emacs-lisp-mode))
