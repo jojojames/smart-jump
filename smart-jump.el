@@ -55,7 +55,7 @@ Defaults to t."
   :type 'number
   :group 'smart-jump)
 
-(defcustom smart-jump-default-order-weight 20
+(defcustom smart-jump-default-order-weight 1
   "The default weight applied to each `smart-jump' registration.
 
 This ordering is used when determining which `smart-jump' strategy to use
@@ -331,13 +331,13 @@ Argument ASYNC Async"
                   )))
          (lambda (first second)
            ;; Extra defensive.. around upgrades...
-           ;; Only (> first-order second-order) is truly needed.
-           ;; If the list is '(2 5 3 1), it should become '(5 3 2 1).
+           ;; Only (< first-order second-order) is truly needed.
+           ;; If the list is '(2 5 3 1), it should become '(1 2 3 5).
            (let ((first-order (plist-get first :order))
                  (second-order (plist-get second :order)))
              (if (or (null first-order) (null second-order))
                  nil
-               (> first-order second-order)))))))
+               (< first-order second-order)))))))
 
 (defun smart-jump-bind-jump-keys (mode-map-symbol)
   "Bind keys for GoToDefinition.

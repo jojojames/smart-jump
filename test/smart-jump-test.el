@@ -205,10 +205,10 @@ Higher :order numbers should be sorted up front."
           (emacs-lisp-mode-hook nil))
       (smart-jump-register :modes 'emacs-lisp-mode
                            :jump-fn 'dummy
-                           :order 1)
+                           :order 2)
       (smart-jump-register :modes 'emacs-lisp-mode
                            :jump-fn 'dummy-2
-                           :order 2)
+                           :order 1)
       (should (equal (plist-get (car smart-jump-list) :jump-fn) 'dummy-2))
       (smart-jump-set-smart-jump-list-for-matching-mode
        'emacs-lisp-mode smart-jump-old-smart-jump-list))))

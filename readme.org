@@ -84,7 +84,7 @@
                        :should-jump t
                        :heuristic 'point
                        :async 500
-                       :order 100)
+                       :order 2)
 
   (smart-jump-register :modes '(c-mode c++-mode)
                        :jump-fn 'rtags-find-symbol-at-point
@@ -97,7 +97,7 @@
                                        (rtags-is-indexed)))
                        :heuristic 'point
                        :async 500
-                       :order 150)
+                       :order 1)
    #+end_src
 
    In this case, the fallback strategy is ->
