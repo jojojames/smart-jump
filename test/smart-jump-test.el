@@ -182,6 +182,7 @@ be added."
         (smart-jump-get-smart-jump-list-for-mode 'emacs-lisp-mode))
   (with-temp-buffer
     (let ((major-mode 'emacs-lisp-mode)
+          (smart-jump-list '())
           (emacs-lisp-mode-hook nil))
       (smart-jump-register :modes 'emacs-lisp-mode
                            :jump-fn 'dummy)
