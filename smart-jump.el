@@ -316,12 +316,6 @@ Argument ASYNC Async"
   (setq smart-jump-list
         (sort
          (append
-          ;; It's better to figure out how to remove the original
-          ;; hook from the mode but for now, at the very least,
-          ;; it's better to remove the old settings upon
-          ;; calling smart-jump-register again.
-          ;; It would be better if this updated smart-jump
-          ;; settings for active modes too.
           (seq-remove (lambda (plist)
                         (eq jump-fn (plist-get plist :jump-fn)))
                       smart-jump-list)
