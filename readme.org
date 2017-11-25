@@ -109,6 +109,9 @@
    ~rtags-find-all-references-at-point~ -> ~ggtags-find-reference~ -> ~smart-jump-simple-find-references~
 
    The ~:order~ keyword in this case designates the sort order of the jumps.
+
+   Take a look at [[file:examples.org][this for more examples.]]
+
 * Help Wanted :)
   Add more fallback methods and/or language support plists.
 
