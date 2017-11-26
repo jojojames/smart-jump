@@ -87,6 +87,15 @@
                          :async t)
 
   #+end_src
+* Python
+#+begin_src emacs-lisp :tangle yes
+  (smart-jump-register :modes 'anaconda-mode
+                       :jump-fn 'anaconda-mode-find-definitions
+                       :pop-fn 'anaconda-mode-go-back
+                       :refs-fn 'anaconda-mode-find-references
+                       :heuristic 'point
+                       :async 600)
+#+end_src
 * Typescript
   #+begin_src emacs-lisp :tangle yes
     (smart-jump-register :modes 'tide-mode
