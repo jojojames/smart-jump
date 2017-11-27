@@ -133,10 +133,9 @@ SMART-LIST will be set if this is a continuation of a previous jump."
              (heuristic-function (plist-get entry :heuristic))
              (async (plist-get entry :async)))
         (setq sj-list (cdr sj-list))
-        (when (or
-               (and (functionp should-run-jump-function)
-                    (funcall should-run-jump-function))
-               should-run-jump-function)
+        (when (if (functionp should-run-jump-function)
+                  (funcall should-run-jump-function)
+                should-run-jump-function)
           (condition-case nil
               (cond
                ((eq heuristic-function 'error)
@@ -202,10 +201,9 @@ call to `smart-jump-references'."
              (heuristic-function (plist-get entry :heuristic))
              (async (plist-get entry :async)))
         (setq sj-list (cdr sj-list))
-        (when (or
-               (and (functionp should-run-jump-function)
-                    (funcall should-run-jump-function))
-               should-run-jump-function)
+        (when (if (functionp should-run-jump-function)
+                  (funcall should-run-jump-function)
+                should-run-jump-function)
           (condition-case nil
               (cond
                ((eq heuristic-function 'error)

@@ -134,6 +134,35 @@ and use the fallback instead."
     (call-interactively #'smart-jump-references)
     (should (equal counter 2))))
 
+(ert-deftest smart-jump-:should-jump:-is-function-is-false-uses-fallback ()
+  "When the 1 -> N-1 jump's :should-jump is a function and also false, it should
+skip that jump and use the fallback instead. This is making sure the
+implementation doesn't use the true-ness of the function symbol when determining
+whether or not it should jump."
+  (defvar smart-jump-fallback-counter nil)
+  (defvar smart-jump-jump-counter nil)
+  (let* ((counter 0)
+         (smart-jump-jump-counter (lambda ()
+                                    (interactive)
+                                    (message "TEST??")
+                                    ;; Test fails if this is hit.
+                                    (setq counter -1)))
+         (smart-jump-list `((
+                             :jump-fn ,smart-jump-jump-counter
+                             :refs-fn ,smart-jump-jump-counter
+                             :should-jump (lambda () nil)
+                             :heuristic error
+                             )))
+         (smart-jump-fallback-counter (lambda ()
+                                        (interactive)
+                                        (setq counter (1+ counter))))
+         (smart-jump-simple-jump-function smart-jump-fallback-counter)
+         (smart-jump-simple-find-references-function
+          smart-jump-fallback-counter))
+    (call-interactively #'smart-jump-go)
+    (call-interactively #'smart-jump-references)
+    (should (equal counter 2))))
+
 (ert-deftest smart-jump-register-updates-current-mode ()
   "When calling `smart-jump-register', current buffer's `smart-jump-list'
 should be updated."
