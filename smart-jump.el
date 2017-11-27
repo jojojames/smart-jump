@@ -277,14 +277,15 @@ fallback strategy is used first. Higher is better."
   (unless (listp modes)
     (setq modes (list modes)))
   (dolist (mode modes)
-    (dolist (b (buffer-list))
-      (with-current-buffer b
-        (when (or (bound-and-true-p mode) ;; `minor-mode'
-                  (eq major-mode mode)) ;; `major-mode'
-          (smart-jump-update-jump-list
-           jump-fn pop-fn refs-fn should-jump heuristic async order))))
     (let ((mode-hook (intern (format "%S-hook" mode)))
           (mode-map (intern (format "%S-map" mode))))
+      (dolist (b (buffer-list))
+        (with-current-buffer b
+          (when (or (bound-and-true-p mode) ;; `minor-mode'
+                    (eq major-mode mode)) ;; `major-mode'
+            (smart-jump-bind-jump-keys mode-map)
+            (smart-jump-update-jump-list
+             jump-fn pop-fn refs-fn should-jump heuristic async order))))
       (add-hook mode-hook
                 ;; Give the hook function a name so we don't add multiple
                 ;; anonymous function to a mode hook everytime
