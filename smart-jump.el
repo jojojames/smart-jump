@@ -335,7 +335,7 @@ Argument ASYNC Async"
                (< first-order second-order)))))))
 
 (defun smart-jump-bind-jump-keys (mode-map-symbol)
-  "Bind keys for GoToDefinition.
+  "Bind keys for `smart-jump-go', `smart-jump-back' and `smart-jump-references'.
 Argument MODE-MAP-SYMBOL Symbol of mode map being registered for `smart-jump'."
   (when smart-jump-bind-keys
     (let ((map (symbol-value mode-map-symbol)))
