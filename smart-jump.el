@@ -51,7 +51,8 @@ Defaults to t."
   :group 'smart-jump)
 
 (defcustom smart-jump-async-wait-time 500
-  "The time to wait in ms when GoToDefinition function is async."
+  "The default time to wait in ms when when setting :async to true
+in `smart-jump-register'. before checking if a jump has failed."
   :type 'number
   :group 'smart-jump)
 
