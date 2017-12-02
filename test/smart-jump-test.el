@@ -20,14 +20,18 @@
   "When mode has not been registered, calling `smart-jump' triggers fallback
 functions."
   (defvar smart-jump-jump-counter nil)
-  (let* ((smart-jump-list nil) ;; nil --> no registration.
-         (counter 0)
+  (let* ((counter 0)
          (smart-jump-jump-counter (lambda ()
                                     (interactive)
                                     (setq counter (1+ counter))))
-         (smart-jump-simple-jump-function smart-jump-jump-counter)
-         (smart-jump-simple-find-references-function
-          smart-jump-jump-counter))
+         (smart-jump-list `((
+                             :jump-fn ,smart-jump-jump-counter
+                             :refs-fn ,smart-jump-jump-counter
+                             :should-jump t
+                             :heuristic point
+                             :async nil
+                             :order 0
+                             ))))
     (call-interactively #'smart-jump-go)
     (call-interactively #'smart-jump-references)
     (should (equal counter 2))))
@@ -35,18 +39,24 @@ functions."
 (ert-deftest smart-jump-with-errors-uses-fallbacks ()
   "When first to N-1 `smart-jump's throws an error, fallbacks are triggered."
   (defvar smart-jump-jump-counter nil)
-  (let* ((smart-jump-list '((
-                             :jump-fn (lambda () (interactive) (throw 'error))
-                             :refs-fn (lambda () (interactive (throw 'error)))
-                             :should-jump t
-                             :heuristic 'error
-                             )))
-         (counter 0)
+  (let* ((counter 0)
          (smart-jump-jump-counter (lambda ()
                                     (interactive)
                                     (setq counter (1+ counter))))
-         (smart-jump-simple-jump-function smart-jump-jump-counter)
-         (smart-jump-simple-find-references-function smart-jump-jump-counter))
+         (smart-jump-list `((
+                             :jump-fn (lambda () (interactive) (throw 'error))
+                             :refs-fn (lambda () (interactive (throw 'error)))
+                             :should-jump t
+                             :heuristic error
+                             :order 1
+                             )
+                            (
+                             :jump-fn ,smart-jump-jump-counter
+                             :refs-fn ,smart-jump-jump-counter
+                             :should-jump t
+                             :heuristic point
+                             :async nil
+                             :order 100))))
     (call-interactively #'smart-jump-go)
     (call-interactively #'smart-jump-references)
     (should (equal counter 2))))
@@ -60,52 +70,26 @@ No fallbacks are triggered."
          (smart-jump-jump-counter (lambda ()
                                     (interactive)
                                     (setq counter (1+ counter))))
-         (smart-jump-list `((
-                             :jump-fn ,smart-jump-jump-counter
-                             :refs-fn ,smart-jump-jump-counter
-                             :should-jump t
-                             :heuristic error
-                             )))
          (smart-jump-fallback-counter (lambda ()
                                         (interactive)
                                         ;; If fallback is called at all, this
                                         ;; test has failed.
                                         (setq counter -1)))
-         (smart-jump-simple-jump-function smart-jump-fallback-counter)
-         (smart-jump-simple-find-references-function smart-jump-fallback-counter))
+         (smart-jump-list `((
+                             :jump-fn ,smart-jump-jump-counter
+                             :refs-fn ,smart-jump-jump-counter
+                             :should-jump t
+                             :heuristic error
+                             )
+                            (
+                             :jump-fn ,smart-jump-fallback-counter
+                             :refs-fn ,smart-jump-fallback-counter
+                             :should-jump t
+                             :heuristic point
+                             :async nil
+                             :order 100))))
     (call-interactively #'smart-jump-go)
     (call-interactively #'smart-jump-references)
-    (should (equal counter 2))))
-
-(ert-deftest smart-jump-with-args-do-not-add-fallbacks ()
-  "When `smart-jump-references' or `smart-jump-go' is called with an argument,
-do not add fallback strategy to `smart-jump-list'.
-
-For example ,when continuing `smart-jump-references' (say from an async
-strategy), we don't want to add the callback to the list of `smart-jump'
-strategies because it should have already been added in the first call."
-  (defvar smart-jump-fallback-counter nil)
-  (defvar smart-jump-jump-counter nil)
-  (let* ((counter 0)
-         (smart-jump-jump-counter (lambda ()
-                                    (interactive)
-                                    (setq counter (1+ counter))))
-         (smart-jump-list `((
-                             :jump-fn ,smart-jump-jump-counter
-                             :refs-fn ,smart-jump-jump-counter
-                             :should-jump t
-                             :heuristic error
-                             )))
-         (smart-jump-fallback-counter (lambda ()
-                                        (interactive)
-                                        ;; If fallback is called at all, this
-                                        ;; test has failed.
-                                        (setq counter -1)))
-         (smart-jump-simple-jump-function smart-jump-fallback-counter)
-         (smart-jump-simple-find-references-function
-          smart-jump-fallback-counter))
-    (smart-jump-go smart-jump-list)
-    (smart-jump-references smart-jump-list)
     (should (equal counter 2))))
 
 (ert-deftest smart-jump-:should-jump:-is-false-uses-fallback ()
@@ -118,18 +102,23 @@ and use the fallback instead."
                                     (interactive)
                                     ;; Test fails if this is hit.
                                     (setq counter -1)))
+         (smart-jump-fallback-counter (lambda ()
+                                        (interactive)
+                                        (setq counter (1+ counter))))
          (smart-jump-list `((
                              :jump-fn ,smart-jump-jump-counter
                              :refs-fn ,smart-jump-jump-counter
                              :should-jump nil
                              :heuristic error
-                             )))
-         (smart-jump-fallback-counter (lambda ()
-                                        (interactive)
-                                        (setq counter (1+ counter))))
-         (smart-jump-simple-jump-function smart-jump-fallback-counter)
-         (smart-jump-simple-find-references-function
-          smart-jump-fallback-counter))
+                             )
+                            (
+                             :jump-fn ,smart-jump-fallback-counter
+                             :refs-fn ,smart-jump-fallback-counter
+                             :should-jump t
+                             :heuristic point
+                             :async nil
+                             :order 100
+                             ))))
     (call-interactively #'smart-jump-go)
     (call-interactively #'smart-jump-references)
     (should (equal counter 2))))
@@ -147,18 +136,23 @@ whether or not it should jump."
                                     (message "TEST??")
                                     ;; Test fails if this is hit.
                                     (setq counter -1)))
+         (smart-jump-fallback-counter (lambda ()
+                                        (interactive)
+                                        (setq counter (1+ counter))))
          (smart-jump-list `((
                              :jump-fn ,smart-jump-jump-counter
                              :refs-fn ,smart-jump-jump-counter
                              :should-jump (lambda () nil)
                              :heuristic error
-                             )))
-         (smart-jump-fallback-counter (lambda ()
-                                        (interactive)
-                                        (setq counter (1+ counter))))
-         (smart-jump-simple-jump-function smart-jump-fallback-counter)
-         (smart-jump-simple-find-references-function
-          smart-jump-fallback-counter))
+                             )
+                            (
+                             :jump-fn ,smart-jump-fallback-counter
+                             :refs-fn ,smart-jump-fallback-counter
+                             :should-jump t
+                             :heuristic point
+                             :async nil
+                             :order 100
+                             ))))
     (call-interactively #'smart-jump-go)
     (call-interactively #'smart-jump-references)
     (should (equal counter 2))))

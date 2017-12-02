@@ -79,23 +79,21 @@ first."
   :type 'string
   :group 'smart-jump)
 
-(defcustom smart-jump-simple-jump-function 'dumb-jump-go
-  "Function used as fallback when jump to definition fails."
-  :type 'function
-  :group 'smart-jump)
+(defvar smart-jump-stack '() "Stack used to navigate tags.")
 
-(defcustom smart-jump-simple-pop-function 'dumb-jump-back
-  "Complementary pop function to `smart-jump-simple-jump-function'."
-  :type 'function
-  :group 'smart-jump)
+(defvar smart-jump-simple-fallback
+  '(
+    :jump-fn dumb-jump-go
+    :pop-fn dumb-jump-back
+    :refs-fn smart-jump-find-references-with-ag
+    :should-jump t
+    :heuristic point
+    :async nil
+    :order 1000
+    )
+  "Fallback settings to use when no other :jump-fn mechanism succeeded.")
 
-(defcustom smart-jump-simple-find-references-function
-  'smart-jump-find-references-with-ag
-  "Function used as fallback when find references fails."
-  :type 'function
-  :group 'smart-jump)
-
-(defvar-local smart-jump-list '()
+(defvar-local smart-jump-list `(,smart-jump-simple-fallback)
   "List of plists that contain metadata to trigger jump to definition
 or find references.
 
@@ -105,27 +103,13 @@ The list comprises of argument lists of this format.
 
 See `smart-jump-register' for more details.")
 
-(defvar smart-jump-stack '() "Stack used to navigate tags.")
-
-(defvar smart-jump-simple-fallback
-  '(
-    :jump-fn smart-jump-simple-jump-to-definition
-    :pop-fn smart-jump-simple-pop-from-definition
-    :refs-fn smart-jump-simple-find-references
-    :should-jump t
-    :heuristic point
-    :async nil
-    )
-  "Fallback settings to use when no other :jump-fn mechanism succeeded.")
-
 ;;;###autoload
 (defun smart-jump-go (&optional smart-list)
   "Go to the function/variable declartion for thing at point.
 
 SMART-LIST will be set if this is a continuation of a previous jump."
   (interactive)
-  (let ((sj-list (or smart-list (append smart-jump-list
-                                        (list smart-jump-simple-fallback)))))
+  (let ((sj-list (or smart-list smart-jump-list)))
     (while sj-list
       (let* ((entry (car sj-list))
              (jump-function (plist-get entry :jump-fn))
@@ -191,8 +175,7 @@ SMART-LIST will be set if this is a continuation of a previous jump."
 Optional argument SMART-LIST This will be non-nil of continuation of previous
 call to `smart-jump-references'."
   (interactive)
-  (let ((sj-list (or smart-list (append smart-jump-list
-                                        (list smart-jump-simple-fallback)))))
+  (let ((sj-list (or smart-list smart-jump-list)))
     (while sj-list
       (let* ((entry (car sj-list))
              (refs-function (plist-get entry :refs-fn))
@@ -351,21 +334,6 @@ Argument MODE-MAP-SYMBOL Symbol of mode map being registered for `smart-jump'."
       (define-key map (kbd smart-jump-refs-key) #'smart-jump-references))))
 
 ;; Helpers
-(defun smart-jump-simple-find-references ()
-  "Call `smart-jump-simple-find-references-function'."
-  (interactive)
-  (call-interactively smart-jump-simple-find-references-function))
-
-(defun smart-jump-simple-jump-to-definition ()
-  "Call `smart-jump-simple-jump-function'."
-  (interactive)
-  (call-interactively smart-jump-simple-jump-function))
-
-(defun smart-jump-simple-pop-from-definition ()
-  "Call `smart-jump-simple-pop-function'."
-  (interactive)
-  (call-interactively smart-jump-simple-pop-function))
-
 (defun smart-jump-find-references-with-ag ()
   "Use `ag' to find references."
   (interactive)
