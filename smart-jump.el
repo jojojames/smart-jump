@@ -273,23 +273,23 @@ fallback strategy is used first. Higher is better."
   (unless (listp modes)
     (setq modes (list modes)))
   (dolist (mode modes)
-    (let ((mode-hook (intern (format "%S-hook" mode)))
-          (mode-map (intern (format "%S-map" mode))))
+    (let ((derived-mode-hook-name (intern (format "%S-hook" mode)))
+          (derived-mode-map-name (intern (format "%S-map" mode))))
       (dolist (b (buffer-list))
         (with-current-buffer b
           (when (or (bound-and-true-p mode) ;; `minor-mode'
                     (eq major-mode mode)) ;; `major-mode'
-            (smart-jump-bind-jump-keys mode-map)
+            (smart-jump-bind-jump-keys derived-mode-map-name)
             (smart-jump-update-jump-list
              jump-fn pop-fn refs-fn should-jump heuristic async order))))
-      (add-hook mode-hook
+      (add-hook derived-mode-hook-name
                 ;; Give the hook function a name so we don't add multiple
                 ;; anonymous function to a mode hook everytime
                 ;; `smart-jump-register' is called.
                 (defalias (intern (format "smart-jump-setup-%S-%S" mode jump-fn))
                   (function
                    (lambda ()
-                     (smart-jump-bind-jump-keys mode-map)
+                     (smart-jump-bind-jump-keys derived-mode-map-name)
                      (smart-jump-update-jump-list
                       jump-fn pop-fn refs-fn should-jump heuristic async order))))
                 :append-to-hook))))
