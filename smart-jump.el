@@ -253,7 +253,8 @@ fallback strategy is used first. Higher is better."
   (when (memq 'not xref-prompt-for-identifier)
     (unless (memq 'smart-jump-go xref-prompt-for-identifier)
       (setq xref-prompt-for-identifier
-            (append xref-prompt-for-identifier (list 'smart-jump-go)))))
+            (append xref-prompt-for-identifier (list 'smart-jump-go
+                                                     'smart-jump-references)))))
   (unless (listp modes)
     (setq modes (list modes)))
   (dolist (mode modes)
