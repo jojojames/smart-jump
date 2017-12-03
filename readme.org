@@ -11,15 +11,17 @@
   falling back to [[https://github.com/jacktasia/dumb-jump][dumb-jump]]
 
 * Install
-  This is not on melpa yet so it needs to be cloned into a directory on Emacs'
-  load-path.
+  Install using ~use-package~.
 
   #+begin_src emacs-lisp :tangle yes
-  (use-package smart-jump
-    :load-path "~/.emacs.d/vendor/smart-jump"
-    :ensure nil)
+  (use-package smart-jump :ensure t)
   #+end_src
 
+  Take a look at the examples below to ~register~ a ~smart-jump~ and then use it
+  with the standard jump keys. (e.g. ~M-.~ ~M-,~ ~M-?~).
+
+  Alternatively, clone this repo, add it to Emacs' ~load-path~ and then require
+  ~smart-jump~.
 * Examples
 ** Bare minimum example
    Sets up smart-jump for [[https://github.com/mooz/js2-mode][js2-mode]] with default settings. Defaults will use the
