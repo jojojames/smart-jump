@@ -38,6 +38,16 @@
                        :heuristic 'point
                        :async 500)
   #+end_src
+* Common Lisp
+  #+begin_src emacs-lisp :tangle yes
+  (smart-jump-register :modes '(slime-mode slime-popup-buffer-mode)
+                       :jump-fn 'slime-edit-definition
+                       :pop-fn 'slime-pop-find-definition-stack
+                       :refs-fn 'slime-who-references
+                       :should-jump 'slime-current-connection
+                       :heuristic 'point
+                       :async 700)
+  #+end_src
 * CSharp
   #+begin_src emacs-lisp :tangle yes
     (smart-jump-register :modes 'csharp-mode
