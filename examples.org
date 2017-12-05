@@ -86,7 +86,17 @@
                          :refs-fn 'ggtags-find-reference
                          :should-jump t
                          :heuristic 'point
-                         :async 700)
+                         :async 700
+                         :order 2)
+
+    (smart-jump-register :modes 'java-mode
+                         :jump-fn 'meghanada-jump-declaration
+                         :pop-fn 'meghanada-back-jump
+                         :refs-fn 'meghanada-reference
+                         :should-jump t
+                         :heuristic 'point
+                         :async 700
+                         :order 1)
   #+end_src
 * Javascript
   #+begin_src emacs-lisp :tangle yes
