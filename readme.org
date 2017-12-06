@@ -8,7 +8,7 @@
   do so.
 
   If one method fails, this package will go on to the next one, eventually
-  falling back to [[https://github.com/jacktasia/dumb-jump][dumb-jump]]
+  falling back to [[https://github.com/jacktasia/dumb-jump][dumb-jump]].
 
 * Install
   Install using ~use-package~.
@@ -18,7 +18,7 @@
   #+end_src
 
   Take a look at the examples below to ~register~ a ~smart-jump~ and then use it
-  with the standard jump keys. (e.g. ~M-.~ ~M-,~ ~M-?~).
+  with the standard jump keys. (e.g. ~M-., M-, M-?~).
 
   Alternatively, clone this repo, add it to Emacs' ~load-path~ and then require
   ~smart-jump~.
@@ -73,9 +73,6 @@
                        :heuristic 'point
                        :async t)
    #+end_src
-
-   Fallback for finding references can be customized with
-   ~smart-jump-simple-find-references-function~.
 ** A more complex example
    Register different GoToDefinition functions with c-mode.
 
