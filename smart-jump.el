@@ -46,6 +46,7 @@ multiple fallbacks."
     intero
     (js2-mode rjsx-mode)
     omnisharp
+    robe
     slime
     tide)
   "The list of modes `smart-jump-setup-default-registers' uses to
