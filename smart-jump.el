@@ -35,6 +35,21 @@ multiple fallbacks."
   :group 'tools
   :group 'convenience)
 
+(defcustom smart-jump-default-mode-list
+  '(alchemist
+    anaconda-mode
+    cc-mode
+    (clojure-mode cider cider-repl)
+    elisp-slime-nav
+    (js2-mode rjsx-mode)
+    omnisharp
+    slime
+    tide)
+  "The list of modes `smart-jump-setup-default-registers' uses to
+register `smart-jump's."
+  :type '(repeat (choice symbol sexp))
+  :group 'smart-jump)
+
 (defcustom smart-jump-bind-keys t
   "If this is true, bind M-.  and M-, upon registering `smart-jump'.
 
@@ -102,6 +117,23 @@ The list comprises of argument lists of this format.
   '(jump-fn: pop-fn: refs-fn: should-jump: heuristic: async:)
 
 See `smart-jump-register' for more details.")
+
+;;;###autoload
+(defun smart-jump-setup-default-registers ()
+  "Register a default set of modes for `smart-jump'."
+  (interactive)
+  (dolist (mode smart-jump-default-mode-list)
+    (let ((m mode)
+          (reqs (list mode)))
+      (when (listp mode)
+        (setq m (car mode)
+              reqs (cdr mode)))
+      (dolist (req reqs)
+        (with-eval-after-load req
+          (require
+           (intern (concat "smart-jump-" (symbol-name m))))
+          (funcall
+           (intern (concat "smart-jump-" (symbol-name m) "-register"))))))))
 
 ;;;###autoload
 (defun smart-jump-go (&optional smart-list)

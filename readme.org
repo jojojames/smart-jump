@@ -14,7 +14,7 @@
   Install using ~use-package~.
 
   #+begin_src emacs-lisp :tangle yes
-  (use-package smart-jump :ensure t)
+    (use-package smart-jump :ensure t)
   #+end_src
 
   Take a look at the examples below to ~register~ a ~smart-jump~ and then use it
@@ -22,6 +22,16 @@
 
   Alternatively, clone this repo, add it to Emacs' ~load-path~ and then require
   ~smart-jump~.
+
+  There's also some ready made ~smart-jumps~. Just call ~smart-jump-setup-default-registers.~
+
+  #+begin_src emacs-lisp :tangle yes
+    (use-package smart-jump
+      :ensure t
+      :config
+      (smart-jump-setup-default-registers))
+  #+end_src
+
 * Examples
 ** Bare minimum example
    Sets up smart-jump for [[https://github.com/mooz/js2-mode][js2-mode]] with default settings. Defaults will use the
@@ -118,6 +128,8 @@
   Async code handling is fairly duplicated.
 
   Add tests!
+
+  Add more default ~smart-jump~ registers.
 * Running Tests
   #+begin_src sh :tangle yes
   cask
