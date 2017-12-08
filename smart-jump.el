@@ -43,6 +43,7 @@ multiple fallbacks."
     elisp-slime-nav
     ensime
     go-mode
+    intero
     (js2-mode rjsx-mode)
     omnisharp
     slime
