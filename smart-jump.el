@@ -42,6 +42,7 @@ multiple fallbacks."
     (clojure-mode cider cider-repl)
     elisp-slime-nav
     ensime
+    go-mode
     (js2-mode rjsx-mode)
     omnisharp
     slime
