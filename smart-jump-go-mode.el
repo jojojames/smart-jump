@@ -35,7 +35,6 @@
   "Register `go-mode' for `smart-jump'."
   (smart-jump-register :modes 'go-mode
                        :jump-fn 'go-guru-definition
-                       :pop-fn 'xref-pop-marker-stack
                        :refs-fn 'go-guru-referrers))
 
 (provide 'smart-jump-go-mode)
