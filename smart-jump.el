@@ -41,6 +41,7 @@ multiple fallbacks."
     cc-mode
     (clojure-mode cider cider-repl)
     elisp-slime-nav
+    elm-mode
     ensime
     go-mode
     intero
