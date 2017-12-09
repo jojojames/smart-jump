@@ -33,7 +33,6 @@
   "Register `intero-mode' for `smart-jump'."
   (smart-jump-register :modes 'intero-mode
                        :jump-fn 'intero-goto-definition
-                       :pop-fn 'xref-pop-marker-stack
                        :refs-fn 'smart-jump-simple-find-references))
 
 (provide 'smart-jump-intero)
