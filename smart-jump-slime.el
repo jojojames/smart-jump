@@ -34,7 +34,7 @@
   (smart-jump-register :modes '(slime-mode slime-popup-buffer-mode)
                        :jump-fn 'slime-edit-definition
                        :pop-fn 'slime-pop-find-definition-stack
-                       :refs-fn 'slime-who-references
+                       :refs-fn 'slime-edit-uses
                        :should-jump 'slime-current-connection
                        :heuristic 'point
                        :async 700))
