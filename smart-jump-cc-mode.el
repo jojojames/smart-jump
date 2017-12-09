@@ -54,7 +54,7 @@
 
   ;; C/C++
   (smart-jump-register :modes '(c-mode c++-mode)
-                       :jump-fn 'ymcd-goto
+                       :jump-fn 'ycmd-goto
                        :refs-fn 'ycmd-goto-references
                        :heuristic 'point
                        :async 500
@@ -85,7 +85,7 @@
 
   ;; Objective-C
   (smart-jump-register :modes 'objc-mode
-                       :jump-fn 'ymcd-goto
+                       :jump-fn 'ycmd-goto
                        :refs-fn 'ycmd-goto-references
                        :heuristic 'point
                        :async 500)
