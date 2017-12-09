@@ -47,6 +47,7 @@ multiple fallbacks."
     go-mode
     intero
     (js2-mode rjsx-mode)
+    lsp-mode
     omnisharp
     robe
     slime
