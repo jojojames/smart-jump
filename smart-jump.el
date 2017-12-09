@@ -98,13 +98,19 @@ first."
   :type 'string
   :group 'smart-jump)
 
+(defcustom smart-jump-find-references-fallback-function
+  'smart-jump-find-references-with-ag
+  "The fallback function used by `smart-jump-simple-find-references'."
+  :type 'function
+  :group 'smart-jump)
+
 (defvar smart-jump-stack '() "Stack used to navigate tags.")
 
 (defvar smart-jump-simple-fallback
   '(
     :jump-fn dumb-jump-go
     :pop-fn dumb-jump-back
-    :refs-fn smart-jump-find-references-with-ag
+    :refs-fn smart-jump-simple-find-references
     :should-jump t
     :heuristic point
     :async nil
@@ -376,6 +382,14 @@ Argument MODE-MAP-SYMBOL Symbol of mode map being registered for `smart-jump'."
       (define-key map (kbd smart-jump-jump-key) #'smart-jump-go)
       (define-key map (kbd smart-jump-pop-key) #'smart-jump-back)
       (define-key map (kbd smart-jump-refs-key) #'smart-jump-references))))
+
+(defun smart-jump-simple-find-references ()
+  "Fallback method for `smart-jump-references'.
+
+Use this when setting `smart-jump-references' :refs-fn and don't want
+to use xref as the fallback."
+  (interactive)
+  (call-interactively smart-jump-find-references-fallback-function))
 
 ;; Helpers
 (defun smart-jump-find-references-with-ag ()
