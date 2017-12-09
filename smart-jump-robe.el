@@ -33,7 +33,6 @@
   "Register `robe-mode' for `smart-jump'."
   (smart-jump-register :modes 'robe-mode
                        :jump-fn 'robe-jump
-                       :pop-fn 'xref-pop-marker-stack
                        :refs-fn 'smart-jump-simple-find-references))
 
 (provide 'smart-jump-robe)
