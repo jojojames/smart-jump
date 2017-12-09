@@ -43,6 +43,7 @@ multiple fallbacks."
     elisp-slime-nav
     elm-mode
     ensime
+    erlang-mode
     go-mode
     intero
     (js2-mode rjsx-mode)
