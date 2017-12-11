@@ -24,10 +24,8 @@
 
 ;;; Commentary:
 ;;; Register `anaconda-mode
-'
 
 ;;; Code:
-
 (defun smart-jump-anaconda-mode-register ()
   "Register `anaconda-mode' for `smart-jump'."
   (smart-jump-register :modes 'anaconda-mode
