@@ -27,7 +27,7 @@
 
 ;;; Code:
 (require 'smart-jump)
-(require 'erlang-mode nil t)
+(require 'erlang nil t)
 
 (defun smart-jump-erlang-mode-register ()
   "Register `erlang-mode' for `smart-jump'."
