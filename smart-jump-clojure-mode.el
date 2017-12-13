@@ -1,4 +1,4 @@
-;;; smart-jump-clojure-mode.el --- Register `clojure' for `smart-jump'. -*- lexical-binding: t -*-
+;;; smart-jump-clojure-mode.el --- Register `clojure-mode' for `smart-jump'. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 James Nguyen
 
@@ -23,7 +23,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Register `clojure' for `smart-jump'.
+;;; Register `clojure-mode' for `smart-jump'.
 
 ;;; Code:
 (require 'clojure-mode nil t)
@@ -32,7 +32,7 @@
 (require 'smart-jump)
 
 (defun smart-jump-clojure-mode-register ()
-  "Register `clojure' for `smart-jump'."
+  "Register `clojure-mode' for `smart-jump'."
   (smart-jump-register :modes '(clojure-mode cider-mode cider-repl-mode)
                        :jump-fn 'cider-find-var
                        :pop-fn 'cider-pop-back
