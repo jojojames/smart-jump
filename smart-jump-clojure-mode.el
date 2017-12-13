@@ -26,7 +26,7 @@
 ;;; Register `clojure' for `smart-jump'.
 
 ;;; Code:
-(require 'clojure nil t)
+(require 'clojure-mode nil t)
 (require 'cider nil t)
 (require 'clj-refactor nil t)
 (require 'smart-jump)
