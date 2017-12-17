@@ -122,6 +122,9 @@
 
    Take a look at [[file:examples.org][this for more examples.]]
 
+* Screenshots
+  Peek to Definition
+  [[./screenshots/peek.png]]
 * Help Wanted :)
   Add more fallback methods and/or language support plists.
 
