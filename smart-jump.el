@@ -42,12 +42,12 @@ multiple fallbacks."
     elisp-mode
     elixir-mode
     elm-mode
-    ensime
+    ensime ;; FIXME: Scala?
     erlang-mode
     go-mode
-    intero
+    intero ;; FIXME: Haskell?
     (js2-mode rjsx-mode)
-    lsp-mode
+    lsp-mode ;; FIXME: Will probably have to add lsp-mode individually.
     python
     robe
     slime
