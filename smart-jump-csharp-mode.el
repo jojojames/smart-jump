@@ -1,4 +1,4 @@
-;;; smart-jump-omnisharp.el --- Register `omnisharp' for `smart-jump'. -*- lexical-binding: t -*-
+;;; smart-jump-csharp-mode.el --- Register `smart-jump' for `csharp-mode'. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 James Nguyen
 
@@ -23,21 +23,27 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Register `omnisharp' for `smart-jump'.
+;;; Register `smart-jump' for `csharp-mode'.
 
 ;;; Code:
-(require 'omnisharp nil t)
 (require 'smart-jump)
+(with-no-warnings
+  (require 'csharp-mode nil t))
+(require 'omnisharp nil t)
 
-(defun smart-jump-omnisharp-register ()
-  "Register `omnisharp' for `smart-jump'."
+(defun smart-jump-omnisharp-available-p ()
+  "Return whether or not `omnisharp' is available."
+  (bound-and-true-p omnisharp-mode))
+
+(defun smart-jump-csharp-mode-register ()
+  "Register `smart-jump' for `csharp-mode'."
   (smart-jump-register :modes 'csharp-mode
                        :jump-fn 'omnisharp-go-to-definition
                        :pop-fn 'pop-tag-mark
                        :refs-fn 'omnisharp-find-usages
-                       :should-jump t
+                       :should-jump #'smart-jump-omnisharp-available-p
                        :heuristic 'point
                        :async 500))
 
-(provide 'smart-jump-omnisharp)
-;;; smart-jump-omnisharp.el ends here
+(provide 'smart-jump-csharp-mode)
+;;; smart-jump-csharp-mode.el ends here

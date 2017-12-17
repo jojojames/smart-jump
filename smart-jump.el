@@ -39,6 +39,7 @@ multiple fallbacks."
   '(alchemist
     anaconda-mode
     cc-mode
+    csharp-mode
     (clojure-mode cider cider-repl)
     elisp-slime-nav
     elm-mode
@@ -48,7 +49,6 @@ multiple fallbacks."
     intero
     (js2-mode rjsx-mode)
     lsp-mode
-    omnisharp
     robe
     slime
     tide)
