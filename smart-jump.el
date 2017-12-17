@@ -51,7 +51,7 @@ multiple fallbacks."
     python
     ruby-mode
     lisp-mode
-    tide)
+    typescript-mode)
   "The list of modes `smart-jump-setup-default-registers' uses to
 register `smart-jump's."
   :type '(repeat (choice symbol sexp))

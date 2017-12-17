@@ -1,4 +1,4 @@
-;;; smart-jump-tide.el --- Register `tide' for `smart-jump'. -*- lexical-binding: t -*-
+;;; smart-jump-typescript-mode.el --- Register `smart-jump' for `typescript-mode'. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 James Nguyen
 
@@ -23,21 +23,25 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Register `tide' for `smart-jump'.
+;;; Register `smart-jump' for `typescript-mode'.
 
 ;;; Code:
 (require 'smart-jump)
 (require 'tide nil t)
 
-(defun smart-jump-tide-register ()
-  "Register `smart-jump' for `tide'."
+(defun smart-jump-tide-available-p ()
+  "Return whether or not `tide' is available."
+  (bound-and-true-p tide-mode))
+
+(defun smart-jump-typescript-mode-register ()
+  "Register `smart-jump' for `typescript-mode'."
   (smart-jump-register :modes 'tide-mode
                        :jump-fn 'tide-jump-to-definition
                        :pop-fn 'tide-jump-back
                        :refs-fn 'tide-references
-                       :should-jump t
+                       :should-jump #'smart-jump-tide-available-p
                        :heuristic 'point
                        :async t))
 
-(provide 'smart-jump-tide)
-;;; smart-jump-tide.el ends here
+(provide 'smart-jump-typescript-mode)
+;;; smart-jump-typescript-mode.el ends here
