@@ -36,12 +36,12 @@ multiple fallbacks."
   :group 'convenience)
 
 (defcustom smart-jump-default-mode-list
-  '(alchemist
-    anaconda-mode
+  '(anaconda-mode
     cc-mode
     csharp-mode
     (clojure-mode cider cider-repl)
     elisp-slime-nav
+    elixir-mode
     elm-mode
     ensime
     erlang-mode

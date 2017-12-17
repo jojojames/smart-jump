@@ -1,4 +1,4 @@
-;;; smart-jump-alchemist.el --- Register `alchemist' for `smart-jump'. -*- lexical-binding: t -*-
+;;; smart-jump-elixir-mode.el --- Register `smart-jump' for `elixir-mode'. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 James Nguyen
 
@@ -23,20 +23,25 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Register `alchemist' for `smart-jump'.
+;;; Register `smart-jump' for `elixir-mode'.
 
 ;;; Code:
 (require 'smart-jump)
+(require 'elixir-mode nil t)
 (require 'alchemist nil t)
 
-(defun smart-jump-alchemist-register ()
-  "Register `alchemist' for `smart-jump'."
-  (smart-jump-register :modes '(alchemist-mode)
+(defun smart-jump-alchemist-available-p ()
+  "Return whether or not `alchemist' is available."
+  (bound-and-true-p alchemist-mode))
+
+(defun smart-jump-elixir-mode-register ()
+  "Register `smart-jump' for `elixir-mode'."
+  (smart-jump-register :modes 'elixir-mode
                        :jump-fn 'alchemist-goto-definition-at-point
                        :pop-fn 'alchemist-goto-jump-back
-                       :should-jump t
+                       :should-jump 'smart-jump-alchemist-available-p
                        :heuristic 'point
                        :async 500))
 
-(provide 'smart-jump-alchemist)
-;;; smart-jump-alchemist.el ends here
+(provide 'smart-jump-elixir-mode)
+;;; smart-jump-elixir-mode.el ends here
