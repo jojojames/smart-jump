@@ -31,13 +31,20 @@
 (require 'clj-refactor nil t)
 (require 'smart-jump)
 
+(defun smart-jump-cider-available-p ()
+  "Return whether or not `cider' is available."
+  (and
+   (bound-and-true-p cider-mode)
+   (fboundp 'cider-connected-p)
+   (cider-connected-p)))
+
 (defun smart-jump-clojure-mode-register ()
   "Register `clojure-mode' for `smart-jump'."
   (smart-jump-register :modes '(clojure-mode cider-mode cider-repl-mode)
                        :jump-fn 'cider-find-var
                        :pop-fn 'cider-pop-back
                        :refs-fn 'cljr-find-usages
-                       :should-jump 'cider-connected-p
+                       :should-jump #'smart-jump-cider-available-p
                        :heuristic 'point
                        :async 500))
 

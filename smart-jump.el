@@ -38,7 +38,7 @@ multiple fallbacks."
 (defcustom smart-jump-default-mode-list
   '(cc-mode
     csharp-mode
-    (clojure-mode cider cider-repl)
+    clojure-mode
     elisp-slime-nav
     elixir-mode
     elm-mode
