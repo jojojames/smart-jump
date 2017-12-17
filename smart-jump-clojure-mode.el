@@ -31,7 +31,7 @@
 (require 'clj-refactor nil t)
 (require 'smart-jump)
 
-(defun smart-jump-cider-available-p ()
+(defun smart-jump-clojure-cider-available-p ()
   "Return whether or not `cider' is available."
   (and
    (bound-and-true-p cider-mode)
@@ -44,7 +44,7 @@
                        :jump-fn 'cider-find-var
                        :pop-fn 'cider-pop-back
                        :refs-fn 'cljr-find-usages
-                       :should-jump #'smart-jump-cider-available-p
+                       :should-jump #'smart-jump-clojure-cider-available-p
                        :heuristic 'point
                        :async 500))
 

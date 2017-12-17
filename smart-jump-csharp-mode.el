@@ -31,7 +31,7 @@
   (require 'csharp-mode nil t))
 (require 'omnisharp nil t)
 
-(defun smart-jump-omnisharp-available-p ()
+(defun smart-jump-csharp-omnisharp-available-p ()
   "Return whether or not `omnisharp' is available."
   (bound-and-true-p omnisharp-mode))
 
@@ -41,7 +41,7 @@
                        :jump-fn 'omnisharp-go-to-definition
                        :pop-fn 'pop-tag-mark
                        :refs-fn 'omnisharp-find-usages
-                       :should-jump #'smart-jump-omnisharp-available-p
+                       :should-jump #'smart-jump-csharp-omnisharp-available-p
                        :heuristic 'point
                        :async 500))
 

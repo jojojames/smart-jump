@@ -29,7 +29,7 @@
 (require 'smart-jump)
 (require 'tide nil t)
 
-(defun smart-jump-tide-available-p ()
+(defun smart-jump-typescript-tide-available-p ()
   "Return whether or not `tide' is available."
   (bound-and-true-p tide-mode))
 
@@ -39,7 +39,7 @@
                        :jump-fn 'tide-jump-to-definition
                        :pop-fn 'tide-jump-back
                        :refs-fn 'tide-references
-                       :should-jump #'smart-jump-tide-available-p
+                       :should-jump #'smart-jump-typescript-tide-available-p
                        :heuristic 'point
                        :async t))
 

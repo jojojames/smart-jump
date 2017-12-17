@@ -31,7 +31,7 @@
 (require 'ruby-mode)
 (require 'smart-jump)
 
-(defun smart-jump-robe-available-p ()
+(defun smart-jump-ruby-robe-available-p ()
   "Return whether or not `robe' is available."
   (bound-and-true-p robe-mode))
 
@@ -40,7 +40,7 @@
   (smart-jump-register :modes 'robe-mode
                        :jump-fn 'robe-jump
                        :refs-fn 'smart-jump-simple-find-references
-                       :should-jump #'smart-jump-robe-available-p))
+                       :should-jump #'smart-jump-ruby-robe-available-p))
 
 (provide 'smart-jump-ruby-mode)
 ;;; smart-jump-ruby-mode.el ends here

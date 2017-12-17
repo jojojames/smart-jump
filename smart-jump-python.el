@@ -30,7 +30,7 @@
 (require 'python)
 (require 'anaconda-mode nil t)
 
-(defun smart-jump-anaconda-available-p ()
+(defun smart-jump-python-anaconda-available-p ()
   "Return whether or not `anaconda-mode' is available."
   (bound-and-true-p anaconda-mode))
 
@@ -40,7 +40,7 @@
                        :jump-fn 'anaconda-mode-find-definitions
                        :pop-fn 'anaconda-mode-go-back
                        :refs-fn 'anaconda-mode-find-references
-                       :should-jump #'smart-jump-anaconda-available-p
+                       :should-jump #'smart-jump-python-anaconda-available-p
                        :heuristic 'point
                        :async 600))
 

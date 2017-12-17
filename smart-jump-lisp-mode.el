@@ -29,7 +29,7 @@
 (require 'slime nil t)
 (require 'smart-jump)
 
-(defun smart-jump-slime-available-p ()
+(defun smart-jump-lisp-slime-available-p ()
   "Return whether or not `slime' is available."
   (and (bound-and-true-p slime-mode)
        (fboundp 'slime-current-connection)
@@ -41,7 +41,7 @@
                        :jump-fn 'slime-edit-definition
                        :pop-fn 'slime-pop-find-definition-stack
                        :refs-fn 'slime-edit-uses
-                       :should-jump #'smart-jump-slime-available-p
+                       :should-jump #'smart-jump-lisp-slime-available-p
                        :heuristic 'point
                        :async 700))
 

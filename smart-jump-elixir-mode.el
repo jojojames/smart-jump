@@ -30,7 +30,7 @@
 (require 'elixir-mode nil t)
 (require 'alchemist nil t)
 
-(defun smart-jump-alchemist-available-p ()
+(defun smart-jump-elixir-alchemist-available-p ()
   "Return whether or not `alchemist' is available."
   (bound-and-true-p alchemist-mode))
 
@@ -39,7 +39,7 @@
   (smart-jump-register :modes 'elixir-mode
                        :jump-fn 'alchemist-goto-definition-at-point
                        :pop-fn 'alchemist-goto-jump-back
-                       :should-jump 'smart-jump-alchemist-available-p
+                       :should-jump 'smart-jump-elixir-alchemist-available-p
                        :heuristic 'point
                        :async 500))
 
