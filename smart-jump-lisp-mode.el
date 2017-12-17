@@ -1,4 +1,4 @@
-;;; smart-jump-slime.el --- Register `slime' for `smart-jump'. -*- lexical-binding: t -*-
+;;; smart-jump-lisp-mode.el --- Register `smart-jump' for `lisp-mode'. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 James Nguyen
 
@@ -23,21 +23,27 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Register `slime' for `smart-jump'.
+;;; Register `smart-jump' for `lisp-mode'.
 
 ;;; Code:
 (require 'slime nil t)
 (require 'smart-jump)
 
-(defun smart-jump-slime-register ()
-  "Register `slime' for `smart-jump'."
+(defun smart-jump-slime-available-p ()
+  "Return whether or not `slime' is available."
+  (and (bound-and-true-p slime-mode)
+       (fboundp 'slime-current-connection)
+       (slime-current-connection)))
+
+(defun smart-jump-lisp-mode-register ()
+  "Register `smart-jump' for `lisp-mode'."
   (smart-jump-register :modes '(slime-mode slime-popup-buffer-mode)
                        :jump-fn 'slime-edit-definition
                        :pop-fn 'slime-pop-find-definition-stack
                        :refs-fn 'slime-edit-uses
-                       :should-jump 'slime-current-connection
+                       :should-jump #'smart-jump-slime-available-p
                        :heuristic 'point
                        :async 700))
 
-(provide 'smart-jump-slime)
-;;; smart-jump-slime.el ends here
+(provide 'smart-jump-lisp-mode)
+;;; smart-jump-lisp-mode.el ends here

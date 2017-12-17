@@ -50,7 +50,7 @@ multiple fallbacks."
     lsp-mode ;; FIXME: Will probably have to add lsp-mode individually.
     python
     ruby-mode
-    slime
+    lisp-mode
     tide)
   "The list of modes `smart-jump-setup-default-registers' uses to
 register `smart-jump's."
