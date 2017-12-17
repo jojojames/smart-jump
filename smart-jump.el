@@ -36,8 +36,7 @@ multiple fallbacks."
   :group 'convenience)
 
 (defcustom smart-jump-default-mode-list
-  '(anaconda-mode
-    cc-mode
+  '(cc-mode
     csharp-mode
     (clojure-mode cider cider-repl)
     elisp-slime-nav
@@ -49,6 +48,7 @@ multiple fallbacks."
     intero
     (js2-mode rjsx-mode)
     lsp-mode
+    python
     robe
     slime
     tide)

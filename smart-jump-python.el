@@ -1,4 +1,4 @@
-;;; smart-jump-anaconda-mode.el --- Register `anaconda-mode' for `smart-jump'. -*- lexical-binding: t -*-
+;;; smart-jump-python.el --- Register `smart-jump' for `python'. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 James Nguyen
 
@@ -23,17 +23,26 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Register `anaconda-mode
+;;; Register `smart-jump' for `python'.
 
 ;;; Code:
-(defun smart-jump-anaconda-mode-register ()
-  "Register `anaconda-mode' for `smart-jump'."
-  (smart-jump-register :modes 'anaconda-mode
+(require 'smart-jump)
+(require 'python)
+(require 'anaconda-mode nil t)
+
+(defun smart-jump-anaconda-available-p ()
+  "Return whether or not `anaconda-mode' is available."
+  (bound-and-true-p anaconda-mode))
+
+(defun smart-jump-python-register ()
+  "Register `smart-jump' for `python'."
+  (smart-jump-register :modes 'python-mode
                        :jump-fn 'anaconda-mode-find-definitions
                        :pop-fn 'anaconda-mode-go-back
                        :refs-fn 'anaconda-mode-find-references
+                       :should-jump #'smart-jump-anaconda-available-p
                        :heuristic 'point
                        :async 600))
 
-(provide 'smart-jump-anaconda-mode)
-;;; smart-jump-anaconda-mode.el ends here
+(provide 'smart-jump-python)
+;;; smart-jump-python.el ends here
