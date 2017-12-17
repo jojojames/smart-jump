@@ -1,9 +1,10 @@
-;;; smart-jump-robe.el --- Register `robe-mode' for `smart-jump'. -*- lexical-binding: t -*-
+;;; smart-jump-ruby-mode.el --- Register `smart-jump' for `ruby-mode'. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 James Nguyen, Terje Larsen
 
 ;; Author: James Nguyen <james@jojojames.com>, Terje Larsen <terlar@gmail.com>
 ;; Maintainer: James Nguyen <james@jojojames.com>, Terje Larsen <terlar@gmail.com>
+
 ;; URL: https://github.com/jojojames/smart-jump
 ;; Version: 0.0.1
 ;; Package-Requires: ((emacs "25.1"))
@@ -23,17 +24,23 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Register `robe-mode' for `smart-jump'.
+;;; Register `smart-jump' for `ruby-mode'.
 
 ;;; Code:
-(require 'smart-jump)
 (require 'robe nil t)
+(require 'ruby-mode)
+(require 'smart-jump)
 
-(defun smart-jump-robe-register ()
-  "Register `robe-mode' for `smart-jump'."
+(defun smart-jump-robe-available-p ()
+  "Return whether or not `robe' is available."
+  (bound-and-true-p robe-mode))
+
+(defun smart-jump-ruby-mode-register ()
+  "Register `smart-jump' for `ruby-mode'."
   (smart-jump-register :modes 'robe-mode
                        :jump-fn 'robe-jump
-                       :refs-fn 'smart-jump-simple-find-references))
+                       :refs-fn 'smart-jump-simple-find-references
+                       :should-jump #'smart-jump-robe-available-p))
 
-(provide 'smart-jump-robe)
-;;; smart-jump-robe.el ends here
+(provide 'smart-jump-ruby-mode)
+;;; smart-jump-ruby-mode.el ends here

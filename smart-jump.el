@@ -49,7 +49,7 @@ multiple fallbacks."
     (js2-mode rjsx-mode)
     lsp-mode ;; FIXME: Will probably have to add lsp-mode individually.
     python
-    robe
+    ruby-mode
     slime
     tide)
   "The list of modes `smart-jump-setup-default-registers' uses to
