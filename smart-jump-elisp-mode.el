@@ -1,4 +1,4 @@
-;;; smart-jump-elisp-slime-nav.el --- Register `elisp-slime-nav' with `smart-jump'. -*- lexical-binding: t -*-
+;;; smart-jump-elisp-mode.el --- Register `smart-jump' for `elisp-mode'. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 James Nguyen
 
@@ -23,20 +23,29 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Register `elisp-slime-nav'
+;;; Register `smart-jump' for `elisp-mode'.
 
 ;;; Code:
-(require 'elisp-slime-nav nil t)
 (require 'smart-jump)
 
-(defun smart-jump-elisp-slime-nav-register ()
-  "Register `elisp-slime-nav' with `smart-jump'."
+;; We don't require this so that it can be autoloaded by the user.
+;; (require 'elisp-slime-nav nil t)
+
+(defun smart-jump-elisp-slime-nav-available-p ()
+  "Return whether or not `elisp-slime-nav' is available."
+  (or
+   (bound-and-true-p elisp-slime-nav-mode)
+   (fboundp 'elisp-slime-nav-find-elisp-thing-at-point)
+   (autoloadp (symbol-function 'elisp-slime-nav-find-elisp-thing-at-point))))
+
+(defun smart-jump-elisp-mode-register ()
+  "Register `smart-jump' for `elisp-mode'."
   (smart-jump-register :modes '(emacs-lisp-mode lisp-interaction-mode)
                        :jump-fn 'elisp-slime-nav-find-elisp-thing-at-point
                        :pop-fn 'pop-tag-mark
-                       :should-jump t
+                       :should-jump #'smart-jump-elisp-slime-nav-available-p
                        :heuristic 'error
                        :async nil))
 
-(provide 'smart-jump-elisp-slime-nav)
-;;; smart-jump-elisp-slime-nav.el ends here
+(provide 'smart-jump-elisp-mode)
+;;; smart-jump-elisp-mode.el ends here

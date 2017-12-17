@@ -39,7 +39,7 @@ multiple fallbacks."
   '(cc-mode
     csharp-mode
     clojure-mode
-    elisp-slime-nav
+    elisp-mode
     elixir-mode
     elm-mode
     ensime
