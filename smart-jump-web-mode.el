@@ -35,7 +35,7 @@
                        :jump-fn 'tide-jump-to-definition
                        :pop-fn 'tide-jump-back
                        :refs-fn 'tide-references
-                       :should-jump #'smart-jump-tide-available-p
+                       :should-jump #'smart-jump-typescript-tide-available-p
                        :heuristic 'point
                        :async t))
 
