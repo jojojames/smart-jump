@@ -47,10 +47,10 @@ multiple fallbacks."
     go-mode
     intero ;; FIXME: Haskell?
     (js2-mode rjsx-mode)
+    lisp-mode
     lsp-mode ;; FIXME: Will probably have to add lsp-mode individually.
     python
     ruby-mode
-    lisp-mode
     typescript-mode
     web-mode)
   "The list of modes `smart-jump-setup-default-registers' uses to
