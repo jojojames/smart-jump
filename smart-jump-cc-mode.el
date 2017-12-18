@@ -57,7 +57,7 @@
                        :jump-fn 'ycmd-goto
                        :refs-fn 'ycmd-goto-references
                        :heuristic 'point
-                       :async 500
+                       :async 2000
                        :order 2)
 
   (smart-jump-register :modes '(c-mode c++-mode)
@@ -71,7 +71,7 @@
                                        (rtags-executable-find "rc")
                                        (rtags-is-indexed)))
                        :heuristic 'point
-                       :async 800
+                       :async 2000
                        :order 1)
 
   (smart-jump-register :modes '(c-mode c++-mode)
