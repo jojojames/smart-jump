@@ -51,6 +51,7 @@ multiple fallbacks."
     lsp-mode ;; FIXME: Will probably have to add lsp-mode individually.
     python
     ruby-mode
+    scheme
     typescript-mode
     web-mode)
   "The list of modes `smart-jump-setup-default-registers' uses to
