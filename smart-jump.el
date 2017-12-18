@@ -310,8 +310,7 @@ http://tuhdo.github.io/emacs-frame-peek.html"
                (frame-char-height)))
 
     ;; 2. Create a new invisible frame, with the current buffer in it.
-    (setq doc-frame (make-frame '((minibuffer . nil)
-                                  (name . "*SmartJump Peek*")
+    (setq doc-frame (make-frame '((name . "*SmartJump Peek*")
                                   (width . 80)
                                   (visibility . nil)
                                   (height . 20)
