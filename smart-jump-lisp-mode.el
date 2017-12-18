@@ -26,7 +26,8 @@
 ;;; Register `smart-jump' for `lisp-mode'.
 
 ;;; Code:
-(require 'slime nil t)
+;; Don't require `slime' becuase `lisp-mode' also loads for `elisp-mode'.
+;; (require 'slime nil t)
 (require 'smart-jump)
 
 (defun smart-jump-lisp-slime-available-p ()
