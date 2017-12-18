@@ -36,7 +36,7 @@ multiple fallbacks."
   :group 'convenience)
 
 (defcustom smart-jump-default-mode-list
-  '(cc-mode
+  '(cc-mode ;; `java-mode', `c-mode', `c++-mode', `objc-mode'
     csharp-mode
     clojure-mode
     elisp-mode
