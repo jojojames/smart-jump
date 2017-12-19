@@ -216,14 +216,17 @@ CONTINUE will be non nil if this is a continuation of a previous jump."
                         'xref-pop-marker-stack)))
 
 ;;;###autoload
-(defun smart-jump-references (&optional smart-list)
+(defun smart-jump-references (&optional smart-list continue)
   "Find references with fallback.
 Optional argument SMART-LIST This will be non-nil of continuation of previous
-call to `smart-jump-references'."
+call to `smart-jump-references'.
+
+CONTINUE will be set if this is a continuation of a previous call to
+`smart-jump-references'."
   (interactive)
-  (push-mark nil t nil)
-  (let ((sj-list (or smart-list smart-jump-list)))
-    (while sj-list
+  (let ((sj-list (or smart-list (and (not continue) smart-jump-list))))
+    (when sj-list
+      (push-mark nil t nil)
       (let* ((entry (car sj-list))
              (refs-function (plist-get entry :refs-fn))
              (pop-function #'pop-tag-mark)
@@ -231,48 +234,38 @@ call to `smart-jump-references'."
              (heuristic-function (plist-get entry :refs-heuristic))
              (async (plist-get entry :async)))
         (setq sj-list (cdr sj-list))
-        (when (smart-jump-should-try-jump-p should-run-jump-function)
-          (condition-case nil
-              (cond
-               ((eq heuristic-function 'error)
-                ;; We already catch for errors so nothing special
-                ;; needs to be done here.
-                (call-interactively refs-function)
-                (setq sj-list nil)
-                (push pop-function smart-jump-stack))
-               ((eq heuristic-function 'point)
-                (let ((current-point (point)))
+        (if (smart-jump-should-try-jump-p should-run-jump-function)
+            (condition-case nil
+                (cond
+                 ((eq heuristic-function 'error)
+                  ;; We already catch for errors so nothing special
+                  ;; needs to be done here.
                   (call-interactively refs-function)
-                  (if async
-                      (let ((saved-list sj-list))
-                        (setq sj-list nil) ;; Early exit current function.
-                        (run-with-idle-timer
-                         (smart-jump-get-async-wait-time async)
-                         nil
-                         (lambda ()
-                           (if (eq (point) current-point)
-                               (smart-jump-references saved-list)
-                             (push pop-function smart-jump-stack)))))
-                    (if (eq (point) current-point)
-                        :continue
-                      (setq sj-list nil)
-                      (push pop-function smart-jump-stack)))))
-               (:custom-heuristic
-                (call-interactively refs-function)
-                (if async
-                    (let ((saved-list sj-list))
-                      (setq sj-list nil) ;; Early exit current function.
+                  (push pop-function smart-jump-stack))
+                 ((eq heuristic-function 'point)
+                  (let* ((current-point (point))
+                         (cb (lambda ()
+                               (if (eq (point) current-point)
+                                   (smart-jump-references sj-list :continue)
+                                 (push pop-function smart-jump-stack)))))
+                    (call-interactively refs-function)
+                    (if (not async)
+                        (funcall cb)
                       (run-with-idle-timer
-                       (smart-jump-get-async-wait-time async)
-                       nil
-                       (lambda ()
-                         (if (funcall heuristic-function)
-                             (push pop-function smart-jump-stack)
-                           (smart-jump-references saved-list)))))
-                  (when (funcall heuristic-function)
-                    (setq sj-list nil)
-                    (push pop-function smart-jump-stack)))))
-            (error :continue)))))))
+                       (smart-jump-get-async-wait-time async) nil cb))))
+                 (:custom-heuristic
+                  (call-interactively refs-function)
+                  (let ((cb (lambda ()
+                              (if (funcall heuristic-function)
+                                  (push pop-function smart-jump-stack)
+                                (smart-jump-references sj-list :continue)))))
+                    (if (not async)
+                        (funcall cb)
+                      (run-with-idle-timer
+                       (smart-jump-get-async-wait-time async) nil cb)))))
+              (error
+               (smart-jump-references sj-list :continue)))
+          (smart-jump-references sj-list :continue))))))
 
 ;;;###autoload
 (defun smart-jump-peek ()
