@@ -126,12 +126,8 @@
   Peek to Definition
   [[./screenshots/peek.png]]
 * Help Wanted :)
-  Add more fallback methods and/or language support plists.
-
-  Async code handling is fairly duplicated.
-
+  Look into issue tracker!
   Add tests!
-
   Add more default ~smart-jump~ registers.
 * Running Tests
   #+begin_src sh :tangle yes
