@@ -239,4 +239,28 @@ Lower :order numbers should be sorted up front."
       (smart-jump-set-smart-jump-list-for-matching-mode
        'emacs-lisp-mode smart-jump-old-smart-jump-list))))
 
+(ert-deftest smart-jump-:before-jump-fn:-called-before-:jump-fn: ()
+  ":before-jump-fn should be called before any :jump-fn."
+  (defvar smart-jump-fallback-counter nil)
+  (defvar smart-jump-jump-counter nil)
+  (let* ((counter 5)
+         (smart-jump-before-jump-counter (lambda ()
+                                           (interactive)
+                                           (setq counter (1+ counter))))
+         (smart-jump-jump-counter (lambda ()
+                                    (interactive)
+                                    (setq counter (* 2 counter))))
+         (smart-jump-list `((
+                             :jump-fn ,smart-jump-jump-counter
+                             :refs-fn ,smart-jump-jump-counter
+                             :before-jump-fn ,smart-jump-before-jump-counter
+                             :should-jump t
+                             :heuristic error
+                             :refs-heuristic error
+                             ))))
+    (call-interactively #'smart-jump-go) ;; (5 + 1) * 2 == 12
+    (call-interactively #'smart-jump-references) ;; (12 + 1) * 2 == 26
+    (should (equal counter 26))))
+
+
 ;;; smart-jump-test.el ends here

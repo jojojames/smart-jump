@@ -170,41 +170,45 @@ CONTINUE will be non nil if this is a continuation of a previous jump."
       (let* ((entry (car sj-list))
              (jump-function (plist-get entry :jump-fn))
              (pop-function (plist-get entry :pop-fn))
+             (before-jump-fn (plist-get entry :before-jump-fn))
              (should-run-jump-function (plist-get entry :should-jump))
              (heuristic-function (plist-get entry :heuristic))
              (async (plist-get entry :async)))
         (setq sj-list (cdr sj-list))
         (if (smart-jump-should-try-jump-p should-run-jump-function)
-            (condition-case nil
-                (cond
-                 ((eq heuristic-function 'error)
-                  ;; We already catch for errors so nothing special
-                  ;; needs to be done here.
-                  (call-interactively jump-function)
-                  (push pop-function smart-jump-stack))
-                 ((eq heuristic-function 'point)
-                  (let* ((current-point (point))
-                         (cb (lambda ()
-                               (if (eq (point) current-point)
-                                   (smart-jump-go sj-list :continue)
-                                 (push pop-function smart-jump-stack)))))
+            (progn
+              (when before-jump-fn
+                (funcall before-jump-fn))
+              (condition-case nil
+                  (cond
+                   ((eq heuristic-function 'error)
+                    ;; We already catch for errors so nothing special
+                    ;; needs to be done here.
                     (call-interactively jump-function)
-                    (if (not async)
-                        (funcall cb)
-                      (run-with-idle-timer
-                       (smart-jump-get-async-wait-time async) nil cb))))
-                 (:custom-heuristic
-                  (call-interactively jump-function)
-                  (let ((cb (lambda ()
-                              (if (funcall heuristic-function)
-                                  (push pop-function smart-jump-stack)
-                                (smart-jump-go sj-list :continue)))))
-                    (if (not async)
-                        (funcall cb)
-                      (run-with-idle-timer
-                       (smart-jump-get-async-wait-time async) nil cb)))))
-              (error
-               (smart-jump-go sj-list :continue)))
+                    (push pop-function smart-jump-stack))
+                   ((eq heuristic-function 'point)
+                    (let* ((current-point (point))
+                           (cb (lambda ()
+                                 (if (eq (point) current-point)
+                                     (smart-jump-go sj-list :continue)
+                                   (push pop-function smart-jump-stack)))))
+                      (call-interactively jump-function)
+                      (if (not async)
+                          (funcall cb)
+                        (run-with-idle-timer
+                         (smart-jump-get-async-wait-time async) nil cb))))
+                   (:custom-heuristic
+                    (call-interactively jump-function)
+                    (let ((cb (lambda ()
+                                (if (funcall heuristic-function)
+                                    (push pop-function smart-jump-stack)
+                                  (smart-jump-go sj-list :continue)))))
+                      (if (not async)
+                          (funcall cb)
+                        (run-with-idle-timer
+                         (smart-jump-get-async-wait-time async) nil cb)))))
+                (error
+                 (smart-jump-go sj-list :continue))))
           (smart-jump-go sj-list :continue))))))
 
 ;;;###autoload
@@ -230,41 +234,45 @@ CONTINUE will be set if this is a continuation of a previous call to
       (let* ((entry (car sj-list))
              (refs-function (plist-get entry :refs-fn))
              (pop-function #'pop-tag-mark)
+             (before-jump-fn (plist-get entry :before-jump-fn))
              (should-run-jump-function (plist-get entry :should-jump))
              (heuristic-function (plist-get entry :refs-heuristic))
              (async (plist-get entry :async)))
         (setq sj-list (cdr sj-list))
         (if (smart-jump-should-try-jump-p should-run-jump-function)
-            (condition-case nil
-                (cond
-                 ((eq heuristic-function 'error)
-                  ;; We already catch for errors so nothing special
-                  ;; needs to be done here.
-                  (call-interactively refs-function)
-                  (push pop-function smart-jump-stack))
-                 ((eq heuristic-function 'point)
-                  (let* ((current-point (point))
-                         (cb (lambda ()
-                               (if (eq (point) current-point)
-                                   (smart-jump-references sj-list :continue)
-                                 (push pop-function smart-jump-stack)))))
+            (progn
+              (when before-jump-fn
+                (funcall before-jump-fn))
+              (condition-case nil
+                  (cond
+                   ((eq heuristic-function 'error)
+                    ;; We already catch for errors so nothing special
+                    ;; needs to be done here.
                     (call-interactively refs-function)
-                    (if (not async)
-                        (funcall cb)
-                      (run-with-idle-timer
-                       (smart-jump-get-async-wait-time async) nil cb))))
-                 (:custom-heuristic
-                  (call-interactively refs-function)
-                  (let ((cb (lambda ()
-                              (if (funcall heuristic-function)
-                                  (push pop-function smart-jump-stack)
-                                (smart-jump-references sj-list :continue)))))
-                    (if (not async)
-                        (funcall cb)
-                      (run-with-idle-timer
-                       (smart-jump-get-async-wait-time async) nil cb)))))
-              (error
-               (smart-jump-references sj-list :continue)))
+                    (push pop-function smart-jump-stack))
+                   ((eq heuristic-function 'point)
+                    (let* ((current-point (point))
+                           (cb (lambda ()
+                                 (if (eq (point) current-point)
+                                     (smart-jump-references sj-list :continue)
+                                   (push pop-function smart-jump-stack)))))
+                      (call-interactively refs-function)
+                      (if (not async)
+                          (funcall cb)
+                        (run-with-idle-timer
+                         (smart-jump-get-async-wait-time async) nil cb))))
+                   (:custom-heuristic
+                    (call-interactively refs-function)
+                    (let ((cb (lambda ()
+                                (if (funcall heuristic-function)
+                                    (push pop-function smart-jump-stack)
+                                  (smart-jump-references sj-list :continue)))))
+                      (if (not async)
+                          (funcall cb)
+                        (run-with-idle-timer
+                         (smart-jump-get-async-wait-time async) nil cb)))))
+                (error
+                 (smart-jump-references sj-list :continue))))
           (smart-jump-references sj-list :continue))))))
 
 ;;;###autoload
@@ -335,6 +343,7 @@ http://tuhdo.github.io/emacs-frame-peek.html"
                                (jump-fn 'xref-find-definitions)
                                (pop-fn 'xref-pop-marker-stack)
                                (refs-fn 'xref-find-references)
+                               (before-jump-fn nil)
                                (should-jump t)
                                (heuristic 'error)
                                (refs-heuristic heuristic)
@@ -347,6 +356,8 @@ JUMP-FN: The function to call interactively to trigger go to definition.
 POP-FN: The reverse of jump-function.
 
 REFS-FN: Function used for finding references.
+
+BEFORE-JUMP-FN: Function called before JUMP-FN is called.
 
 SHOULD-JUMP: Either t, nil or a function that determines if jump-fn
 should be triggered.
@@ -382,6 +393,7 @@ fallback strategy is used first. Lower numbers give more precedence."
              jump-fn
              pop-fn
              refs-fn
+             before-jump-fn
              should-jump
              heuristic
              refs-heuristic
@@ -399,6 +411,7 @@ fallback strategy is used first. Lower numbers give more precedence."
                       jump-fn
                       pop-fn
                       refs-fn
+                      before-jump-fn
                       should-jump
                       heuristic
                       refs-heuristic
@@ -409,6 +422,7 @@ fallback strategy is used first. Lower numbers give more precedence."
 (defun smart-jump-update-jump-list (jump-fn
                                     pop-fn
                                     refs-fn
+                                    before-jump-fn
                                     should-jump
                                     heuristic
                                     refs-heuristic
@@ -432,6 +446,7 @@ Argument ASYNC Async"
                   :jump-fn ,jump-fn
                   :pop-fn ,pop-fn
                   :refs-fn ,refs-fn
+                  :before-jump-fn ,before-jump-fn
                   :should-jump ,should-jump
                   :heuristic ,heuristic
                   :refs-heuristic ,refs-heuristic
