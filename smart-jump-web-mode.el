@@ -31,13 +31,7 @@
 
 (defun smart-jump-web-mode-register ()
   "Register `smart-jump' for `web-mode'."
-  (smart-jump-register :modes 'web-mode
-                       :jump-fn 'tide-jump-to-definition
-                       :pop-fn 'tide-jump-back
-                       :refs-fn 'tide-references
-                       :should-jump #'smart-jump-typescript-tide-available-p
-                       :heuristic 'point
-                       :async t))
+  (smart-jump-typescript-mode-register 'web-mode))
 
 (provide 'smart-jump-web-mode)
 ;;; smart-jump-web-mode.el ends here

@@ -29,18 +29,37 @@
 (require 'smart-jump)
 (require 'tide nil t)
 
+(defvar smart-jump-typescript-current-point nil "The current point.")
+
 (defun smart-jump-typescript-tide-available-p ()
   "Return whether or not `tide' is available."
   (bound-and-true-p tide-mode))
 
-(defun smart-jump-typescript-mode-register ()
+(defun smart-jump-typescript-tide-save-state ()
+  "Save some state for `smart-jump'."
+  (setq smart-jump-typescript-current-point (point)))
+
+(defun smart-jump-typescript-tide-references-succeeded-p ()
+  "Return whether or not `tide-references' succeeded."
+  (cond
+   ((not (eq smart-jump-typescript-current-point (point)))
+    :succeeded)
+   ((and (get-buffer "*tide-references*")
+         (get-buffer-window (get-buffer "*tide-references*")))
+    :succeeded)
+   (:default nil)))
+
+(defun smart-jump-typescript-mode-register (&optional mode)
   "Register `smart-jump' for `typescript-mode'."
-  (smart-jump-register :modes 'tide-mode
+  (smart-jump-register :modes (or mode 'tide-mode)
                        :jump-fn 'tide-jump-to-definition
                        :pop-fn 'tide-jump-back
                        :refs-fn 'tide-references
+                       :before-jump-fn #'smart-jump-typescript-tide-save-state
                        :should-jump #'smart-jump-typescript-tide-available-p
                        :heuristic 'point
+                       :refs-heuristic
+                       #'smart-jump-typescript-tide-references-succeeded-p
                        :async t))
 
 (provide 'smart-jump-typescript-mode)
