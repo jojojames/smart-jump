@@ -80,6 +80,7 @@ No fallbacks are triggered."
                              :refs-fn ,smart-jump-jump-counter
                              :should-jump t
                              :heuristic error
+                             :refs-heuristic error
                              )
                             (
                              :jump-fn ,smart-jump-fallback-counter
@@ -144,12 +145,14 @@ whether or not it should jump."
                              :refs-fn ,smart-jump-jump-counter
                              :should-jump (lambda () nil)
                              :heuristic error
+                             :refs-heuristic error
                              )
                             (
                              :jump-fn ,smart-jump-fallback-counter
                              :refs-fn ,smart-jump-fallback-counter
                              :should-jump t
                              :heuristic point
+                             :refs-heuristic point
                              :async nil
                              :order 100
                              ))))

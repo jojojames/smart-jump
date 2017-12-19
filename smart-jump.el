@@ -236,7 +236,7 @@ call to `smart-jump-references'."
              (refs-function (plist-get entry :refs-fn))
              (pop-function #'pop-tag-mark)
              (should-run-jump-function (plist-get entry :should-jump))
-             (heuristic-function (plist-get entry :heuristic))
+             (heuristic-function (plist-get entry :refs-heuristic))
              (async (plist-get entry :async)))
         (setq sj-list (cdr sj-list))
         (when (smart-jump-should-try-jump-p should-run-jump-function)
@@ -352,6 +352,7 @@ http://tuhdo.github.io/emacs-frame-peek.html"
                                (refs-fn 'xref-find-references)
                                (should-jump t)
                                (heuristic 'error)
+                               (refs-heuristic heuristic)
                                (async nil)
                                (order smart-jump-default-order-weight))
   "Register mode for use with `smart-jump'.
@@ -367,6 +368,8 @@ should be triggered.
 
 HEURISTIC: Either a recognized symbol or a custom function that will be
 ran after jump-function is triggered.
+
+REFS-HEURISTIC: Like HEURISTIC, but for use with REFS-FN.
 
 ASYNC: Whether or not to run the heuristic function after a certain time.
 If this is a number, run the heuristic function after that many ms.
@@ -390,7 +393,14 @@ fallback strategy is used first. Lower numbers give more precedence."
                     (eq major-mode mode)) ;; `major-mode'
             (smart-jump-bind-jump-keys derived-mode-map-name)
             (smart-jump-update-jump-list
-             jump-fn pop-fn refs-fn should-jump heuristic async order))))
+             jump-fn
+             pop-fn
+             refs-fn
+             should-jump
+             heuristic
+             refs-heuristic
+             async
+             order))))
       (add-hook derived-mode-hook-name
                 ;; Give the hook function a name so we don't add multiple
                 ;; anonymous function to a mode hook everytime
@@ -400,7 +410,14 @@ fallback strategy is used first. Lower numbers give more precedence."
                    (lambda ()
                      (smart-jump-bind-jump-keys derived-mode-map-name)
                      (smart-jump-update-jump-list
-                      jump-fn pop-fn refs-fn should-jump heuristic async order))))
+                      jump-fn
+                      pop-fn
+                      refs-fn
+                      should-jump
+                      heuristic
+                      refs-heuristic
+                      async
+                      order))))
                 :append-to-hook))))
 
 (defun smart-jump-update-jump-list (jump-fn
@@ -408,6 +425,7 @@ fallback strategy is used first. Lower numbers give more precedence."
                                     refs-fn
                                     should-jump
                                     heuristic
+                                    refs-heuristic
                                     async
                                     order)
   "Update `smart-jump-list' with new settings.
@@ -416,6 +434,7 @@ Argument POP-FN Pop
 Argument REFS-FN Find References
 Argument SHOULD-JUMP Should Jump
 Argument HEURISTIC Heuristic
+Argument REFS-HEURISTIC Heuristic for REFS-FN
 Argument ASYNC Async"
   (setq smart-jump-list
         (sort
@@ -429,6 +448,7 @@ Argument ASYNC Async"
                   :refs-fn ,refs-fn
                   :should-jump ,should-jump
                   :heuristic ,heuristic
+                  :refs-heuristic ,refs-heuristic
                   :async ,async
                   :order ,order
                   )))
