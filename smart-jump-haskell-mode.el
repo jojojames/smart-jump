@@ -1,4 +1,4 @@
-;;; smart-jump-intero.el --- Register `intero-mode' for `smart-jump'. -*- lexical-binding: t -*-
+;;; smart-jump-haskell-mode.el --- Register `smart-jump' for `haskell-mode'. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 James Nguyen, Terje Larsen
 
@@ -23,17 +23,22 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; Register `intero-mode' for `smart-jump'.
+;;; Register `smart-jump' for `haskell-mode'.
 
 ;;; Code:
 (require 'smart-jump)
 (require 'intero nil t)
 
-(defun smart-jump-intero-register ()
-  "Register `intero-mode' for `smart-jump'."
+(defun smart-jump-haskell-mode-intero-available-p ()
+  "Return whether or not `intero' is available."
+  (bound-and-true-p intero-mode))
+
+(defun smart-jump-haskell-mode-register ()
+  "Register `smart-jump' for `haskell-mode'."
   (smart-jump-register :modes 'intero-mode
                        :jump-fn 'intero-goto-definition
-                       :refs-fn 'smart-jump-simple-find-references))
+                       :refs-fn 'smart-jump-simple-find-references
+                       :should-jump #'smart-jump-haskell-mode-intero-available-p))
 
-(provide 'smart-jump-intero)
-;;; smart-jump-intero.el ends here
+(provide 'smart-jump-haskell-mode)
+;;; smart-jump-haskell-mode.el ends here

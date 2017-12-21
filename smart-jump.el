@@ -45,7 +45,7 @@ multiple fallbacks."
     ensime ;; FIXME: Scala?
     erlang-mode
     go-mode
-    intero ;; FIXME: Haskell?
+    haskell-mode
     (js2-mode rjsx-mode)
     lisp-mode
     lsp-mode ;; FIXME: Will probably have to add lsp-mode individually.
