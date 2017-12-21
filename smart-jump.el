@@ -42,7 +42,6 @@ multiple fallbacks."
     elisp-mode
     elixir-mode
     elm-mode
-    ensime ;; FIXME: Scala?
     erlang-mode
     go-mode
     haskell-mode
@@ -51,6 +50,7 @@ multiple fallbacks."
     lsp-mode ;; FIXME: Will probably have to add lsp-mode individually.
     python
     ruby-mode
+    scala-mode
     scheme
     typescript-mode
     web-mode)
