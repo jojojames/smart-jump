@@ -50,6 +50,7 @@ multiple fallbacks."
     lsp-mode
     python
     ruby-mode
+    rust-mode
     scala-mode
     scheme
     typescript-mode
