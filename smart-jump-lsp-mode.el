@@ -29,9 +29,16 @@
 (require 'smart-jump)
 (require 'lsp-mode nil t)
 
+(defcustom smart-jump-lsp-mode-order 0
+  "The order `lsp-mode' runs during a `smart-jump'.
+
+This needs to be set before `smart-jump-lsp-mode-register' is called."
+  :type 'integer
+  :group 'smart-jump)
+
 (defun smart-jump-lsp-mode-register ()
   "Register `lsp-mode' for `smart-jump'."
-  (smart-jump-register :modes 'lsp-mode))
+  (smart-jump-register :modes 'lsp-mode :order smart-jump-lsp-mode-order))
 
 (provide 'smart-jump-lsp-mode)
 ;;; smart-jump-lsp-mode.el ends here
