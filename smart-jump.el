@@ -47,7 +47,7 @@ multiple fallbacks."
     haskell-mode
     (js2-mode rjsx-mode)
     lisp-mode
-    lsp-mode ;; FIXME: Will probably have to add lsp-mode individually.
+    lsp-mode
     python
     ruby-mode
     scala-mode
