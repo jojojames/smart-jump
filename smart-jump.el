@@ -53,6 +53,7 @@ multiple fallbacks."
     rust-mode
     scala-mode
     scheme
+    swift-mode
     typescript-mode
     web-mode)
   "The list of modes `smart-jump-setup-default-registers' uses to
