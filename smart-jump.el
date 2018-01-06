@@ -383,13 +383,12 @@ fallback strategy is used first. Lower numbers give more precedence."
   (unless (listp modes)
     (setq modes (list modes)))
   (dolist (mode modes)
-    (let ((derived-mode-hook-name (intern (format "%S-hook" mode)))
-          (derived-mode-map-name (intern (format "%S-map" mode))))
+    (let ((derived-mode-hook-name (intern (format "%S-hook" mode))))
       (dolist (b (buffer-list))
         (with-current-buffer b
           (when (or (bound-and-true-p mode) ;; `minor-mode'
                     (eq major-mode mode)) ;; `major-mode'
-            (smart-jump-bind-jump-keys derived-mode-map-name)
+            (smart-jump-bind-jump-keys mode)
             (smart-jump-update-jump-list
              jump-fn
              pop-fn
@@ -407,7 +406,7 @@ fallback strategy is used first. Lower numbers give more precedence."
                 (defalias (intern (format "smart-jump-setup-%S-%S" mode jump-fn))
                   (function
                    (lambda ()
-                     (smart-jump-bind-jump-keys derived-mode-map-name)
+                     (smart-jump-bind-jump-keys mode)
                      (smart-jump-update-jump-list
                       jump-fn
                       pop-fn
@@ -464,11 +463,13 @@ Argument ASYNC Async"
                  nil
                (< first-order second-order)))))))
 
-(defun smart-jump-bind-jump-keys (mode-map-symbol)
+(defun smart-jump-bind-jump-keys (mode)
   "Bind keys for `smart-jump-go', `smart-jump-back' and `smart-jump-references'.
-Argument MODE-MAP-SYMBOL Symbol of mode map being registered for `smart-jump'."
+
+MODE is mode to bind keys to."
   (when smart-jump-bind-keys
-    (let ((map (symbol-value mode-map-symbol)))
+    (let* ((derived-mode-map-name (intern (format "%S-map" mode)))
+           (map (symbol-value derived-mode-map-name)))
       (when smart-jump-bind-keys-for-evil
         (with-eval-after-load 'evil
           (when (fboundp 'evil-define-key*)
