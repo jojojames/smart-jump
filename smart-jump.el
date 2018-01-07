@@ -182,49 +182,10 @@ CONTINUE will be non nil if this is a continuation of a previous jump."
   (interactive)
   (let ((sj-list (or smart-list (and (not continue) smart-jump-list))))
     (when sj-list
-      (let* ((entry (car sj-list))
-             (jump-function (plist-get entry :jump-fn))
-             (pop-function (plist-get entry :pop-fn))
-             (before-jump-fn (plist-get entry :before-jump-fn))
-             (should-run-jump-function (plist-get entry :should-jump))
-             (heuristic-function (plist-get entry :heuristic))
-             (async (plist-get entry :async)))
-        (setq sj-list (cdr sj-list))
-        (if (smart-jump-should-try-jump-p should-run-jump-function)
-            (progn
-              (when before-jump-fn
-                (funcall before-jump-fn))
-              (condition-case nil
-                  (cond
-                   ((eq heuristic-function 'error)
-                    ;; We already catch for errors so nothing special
-                    ;; needs to be done here.
-                    (call-interactively jump-function)
-                    (push pop-function smart-jump-stack))
-                   ((eq heuristic-function 'point)
-                    (let* ((current-point (point))
-                           (cb (lambda ()
-                                 (if (eq (point) current-point)
-                                     (smart-jump-go sj-list :continue)
-                                   (push pop-function smart-jump-stack)))))
-                      (call-interactively jump-function)
-                      (if (not async)
-                          (funcall cb)
-                        (run-with-idle-timer
-                         (smart-jump-get-async-wait-time async) nil cb))))
-                   (:custom-heuristic
-                    (call-interactively jump-function)
-                    (let ((cb (lambda ()
-                                (if (funcall heuristic-function)
-                                    (push pop-function smart-jump-stack)
-                                  (smart-jump-go sj-list :continue)))))
-                      (if (not async)
-                          (funcall cb)
-                        (run-with-idle-timer
-                         (smart-jump-get-async-wait-time async) nil cb)))))
-                (error
-                 (smart-jump-go sj-list :continue))))
-          (smart-jump-go sj-list :continue))))))
+      (smart-jump-run
+       #'smart-jump-go
+       sj-list
+       :jump-fn :heuristic :pop-fn))))
 
 ;;;###autoload
 (defun smart-jump-back ()
@@ -246,49 +207,69 @@ CONTINUE will be set if this is a continuation of a previous call to
   (let ((sj-list (or smart-list (and (not continue) smart-jump-list))))
     (when sj-list
       (push-mark nil t nil)
-      (let* ((entry (car sj-list))
-             (refs-function (plist-get entry :refs-fn))
-             (pop-function #'pop-tag-mark)
-             (before-jump-fn (plist-get entry :before-jump-fn))
-             (should-run-jump-function (plist-get entry :should-jump))
-             (heuristic-function (plist-get entry :refs-heuristic))
-             (async (plist-get entry :async)))
-        (setq sj-list (cdr sj-list))
-        (if (smart-jump-should-try-jump-p should-run-jump-function)
-            (progn
-              (when before-jump-fn
-                (funcall before-jump-fn))
-              (condition-case nil
-                  (cond
-                   ((eq heuristic-function 'error)
-                    ;; We already catch for errors so nothing special
-                    ;; needs to be done here.
-                    (call-interactively refs-function)
-                    (push pop-function smart-jump-stack))
-                   ((eq heuristic-function 'point)
-                    (let* ((current-point (point))
-                           (cb (lambda ()
-                                 (if (eq (point) current-point)
-                                     (smart-jump-references sj-list :continue)
-                                   (push pop-function smart-jump-stack)))))
-                      (call-interactively refs-function)
-                      (if (not async)
-                          (funcall cb)
-                        (run-with-idle-timer
-                         (smart-jump-get-async-wait-time async) nil cb))))
-                   (:custom-heuristic
-                    (call-interactively refs-function)
-                    (let ((cb (lambda ()
-                                (if (funcall heuristic-function)
-                                    (push pop-function smart-jump-stack)
-                                  (smart-jump-references sj-list :continue)))))
-                      (if (not async)
-                          (funcall cb)
-                        (run-with-idle-timer
-                         (smart-jump-get-async-wait-time async) nil cb)))))
-                (error
-                 (smart-jump-references sj-list :continue))))
-          (smart-jump-references sj-list :continue))))))
+      (smart-jump-run
+       #'smart-jump-references
+       sj-list
+       :refs-fn :refs-heuristic :default-pop-key))))
+
+(defun smart-jump-run (self-command sj-list function-key heuristic-key pop-key)
+  "Workhorse method for outer smart-jump-* methods.
+
+SELF-COMMAND: The command the user interactively called. (e.g. `smart-jump-go').
+
+SJ-LIST: The list of jumps to try.
+
+FUNCTION-KEY: Key used to access function to call from SJ-LIST.
+
+HEURISTIC-KEY: Key used to access heuristic function to run after attempting
+jump. The heuristic will be used to check if the jump succeeded or not.
+
+POP-KEY: Key used to access pop function. If key is not found or not
+provided, `pop-tag-mark' will be used as the default."
+  (interactive)
+  (let* ((entry (car sj-list))
+         (jump-function (plist-get entry function-key))
+         (pop-function (or (plist-get entry pop-key) #'pop-tag-mark))
+         (before-jump-fn (plist-get entry :before-jump-fn))
+         (should-run-jump-function (plist-get entry :should-jump))
+         (heuristic-function (plist-get entry heuristic-key))
+         (async (plist-get entry :async)))
+    (setq sj-list (cdr sj-list))
+    (if (smart-jump-should-try-jump-p should-run-jump-function)
+        (progn
+          (when before-jump-fn
+            (funcall before-jump-fn))
+          (condition-case nil
+              (cond
+               ((eq heuristic-function 'error)
+                ;; We already catch for errors so nothing special
+                ;; needs to be done here.
+                (call-interactively jump-function)
+                (push pop-function smart-jump-stack))
+               ((eq heuristic-function 'point)
+                (let* ((current-point (point))
+                       (cb (lambda ()
+                             (if (eq (point) current-point)
+                                 (funcall self-command sj-list :continue)
+                               (push pop-function smart-jump-stack)))))
+                  (call-interactively jump-function)
+                  (if (not async)
+                      (funcall cb)
+                    (run-with-idle-timer
+                     (smart-jump-get-async-wait-time async) nil cb))))
+               (:custom-heuristic
+                (call-interactively jump-function)
+                (let ((cb (lambda ()
+                            (if (funcall heuristic-function)
+                                (push pop-function smart-jump-stack)
+                              (funcall self-command sj-list :continue)))))
+                  (if (not async)
+                      (funcall cb)
+                    (run-with-idle-timer
+                     (smart-jump-get-async-wait-time async) nil cb)))))
+            (error
+             (funcall self-command sj-list :continue))))
+      (funcall self-command sj-list :continue))))
 
 ;;;###autoload
 (defun smart-jump-peek ()
