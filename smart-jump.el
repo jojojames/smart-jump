@@ -173,6 +173,12 @@ See `smart-jump-register' for more details.")
            (intern (concat "smart-jump-" (symbol-name m) "-register"))))))))
 
 ;;;###autoload
+(defun smart-jump-peek ()
+  "Peek at definition."
+  (interactive)
+  (smart-jump-make-peek-frame 'smart-jump-go))
+
+;;;###autoload
 (defun smart-jump-go (&optional smart-list continue)
   "Go to the function/variable declartion for thing at point.
 
@@ -212,6 +218,7 @@ CONTINUE will be set if this is a continuation of a previous call to
        sj-list
        :refs-fn :refs-heuristic :default-pop-key))))
 
+;; Helpers
 (defun smart-jump-run (self-command sj-list function-key heuristic-key pop-key)
   "Workhorse method for outer smart-jump-* methods.
 
@@ -270,12 +277,6 @@ provided, `pop-tag-mark' will be used as the default."
             (error
              (funcall self-command sj-list :continue))))
       (funcall self-command sj-list :continue))))
-
-;;;###autoload
-(defun smart-jump-peek ()
-  "Peek at definition."
-  (interactive)
-  (smart-jump-make-peek-frame 'smart-jump-go))
 
 (defun smart-jump-make-peek-frame (find-definition-function &rest args)
   "Make a new frame for peeking definition.
@@ -486,7 +487,6 @@ to use xref as the fallback."
   (interactive)
   (call-interactively smart-jump-find-references-fallback-function))
 
-;; Helpers
 (defun smart-jump-find-references-with-ag ()
   "Use `ag' to find references."
   (interactive)
