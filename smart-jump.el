@@ -464,8 +464,8 @@ Argument ASYNC Async"
 MODE is mode to bind keys to."
   (when smart-jump-bind-keys
     (let* ((derived-mode-map-name (intern (format "%S-map" mode))))
-      (when-let ((map (when (boundp derived-mode-map-name)
-                        (symbol-value derived-mode-map-name))))
+      (when-let* ((map (when (boundp derived-mode-map-name)
+                         (symbol-value derived-mode-map-name))))
         (when smart-jump-bind-keys-for-evil
           (with-eval-after-load 'evil
             (when (fboundp 'evil-define-key*)
