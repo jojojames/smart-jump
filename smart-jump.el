@@ -26,6 +26,7 @@
 ;;; Smart go to definition.
 
 ;;; Code:
+(eval-when-compile (require 'subr-x))
 (require 'dumb-jump)
 (require 'seq)
 
@@ -186,12 +187,11 @@ SMART-LIST will be set (or nil) if this is a continuation of a previous jump.
 
 CONTINUE will be non nil if this is a continuation of a previous jump."
   (interactive)
-  (let ((sj-list (or smart-list (and (not continue) smart-jump-list))))
-    (when sj-list
-      (smart-jump-run
-       #'smart-jump-go
-       sj-list
-       :jump-fn :heuristic :pop-fn))))
+  (when-let* ((sj-list (or smart-list (and (not continue) smart-jump-list))))
+    (smart-jump-run
+     #'smart-jump-go
+     sj-list
+     :jump-fn :heuristic :pop-fn)))
 
 ;;;###autoload
 (defun smart-jump-back ()
@@ -210,13 +210,12 @@ call to `smart-jump-references'.
 CONTINUE will be set if this is a continuation of a previous call to
 `smart-jump-references'."
   (interactive)
-  (let ((sj-list (or smart-list (and (not continue) smart-jump-list))))
-    (when sj-list
-      (push-mark nil t nil)
-      (smart-jump-run
-       #'smart-jump-references
-       sj-list
-       :refs-fn :refs-heuristic :default-pop-key))))
+  (when-let* ((sj-list (or smart-list (and (not continue) smart-jump-list))))
+    (push-mark nil t nil)
+    (smart-jump-run
+     #'smart-jump-references
+     sj-list
+     :refs-fn :refs-heuristic :default-pop-key)))
 
 ;; Helpers
 (defun smart-jump-run (self-command sj-list function-key heuristic-key pop-key)
