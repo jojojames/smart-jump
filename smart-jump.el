@@ -463,20 +463,21 @@ Argument ASYNC Async"
 
 MODE is mode to bind keys to."
   (when smart-jump-bind-keys
-    (let* ((derived-mode-map-name (intern (format "%S-map" mode)))
-           (map (symbol-value derived-mode-map-name)))
-      (when smart-jump-bind-keys-for-evil
-        (with-eval-after-load 'evil
-          (when (fboundp 'evil-define-key*)
-            (evil-define-key* 'normal map
-                              (kbd smart-jump-jump-key) #'smart-jump-go
-                              (kbd smart-jump-pop-key) #'smart-jump-back
-                              (kbd smart-jump-refs-key) #'smart-jump-references
-                              (kbd smart-jump-peek-key) #'smart-jump-peek))))
-      (define-key map (kbd smart-jump-jump-key) #'smart-jump-go)
-      (define-key map (kbd smart-jump-pop-key) #'smart-jump-back)
-      (define-key map (kbd smart-jump-refs-key) #'smart-jump-references)
-      (define-key map (kbd smart-jump-peek-key) #'smart-jump-peek))))
+    (let* ((derived-mode-map-name (intern (format "%S-map" mode))))
+      (when-let ((map (when (boundp derived-mode-map-name)
+                        (symbol-value derived-mode-map-name))))
+        (when smart-jump-bind-keys-for-evil
+          (with-eval-after-load 'evil
+            (when (fboundp 'evil-define-key*)
+              (evil-define-key* 'normal map
+                                (kbd smart-jump-jump-key) #'smart-jump-go
+                                (kbd smart-jump-pop-key) #'smart-jump-back
+                                (kbd smart-jump-refs-key) #'smart-jump-references
+                                (kbd smart-jump-peek-key) #'smart-jump-peek))))
+        (define-key map (kbd smart-jump-jump-key) #'smart-jump-go)
+        (define-key map (kbd smart-jump-pop-key) #'smart-jump-back)
+        (define-key map (kbd smart-jump-refs-key) #'smart-jump-references)
+        (define-key map (kbd smart-jump-peek-key) #'smart-jump-peek)))))
 
 (defun smart-jump-simple-find-references ()
   "Fallback method for `smart-jump-references'.
