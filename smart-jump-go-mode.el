@@ -31,11 +31,20 @@
 (require 'smart-jump)
 (require 'go-guru nil t)
 
+(defun smart-jump-go-mode-go-guru-available-p ()
+  "Return whether or not `go-guru' is available."
+  (fboundp 'go-guru-definition))
+
 (defun smart-jump-go-mode-register ()
   "Register `go-mode' for `smart-jump'."
   (smart-jump-register :modes 'go-mode
                        :jump-fn 'go-guru-definition
-                       :refs-fn 'go-guru-referrers))
+                       :refs-fn 'go-guru-referrers
+                       :order 1
+                       :should-jump #'smart-jump-go-mode-go-guru-available-p)
+  (smart-jump-register :modes 'go-mode
+                       :jump-fn 'godef-jump
+                       :order 2))
 
 (provide 'smart-jump-go-mode)
 ;;; smart-jump-go-mode.el ends here
