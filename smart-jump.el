@@ -33,12 +33,15 @@
 ;; Compatibility
 
 (eval-and-compile
-  (when (version< emacs-version "26")
-    (with-no-warnings
-      (defalias 'if-let* #'if-let)
-      (defalias 'when-let* #'when-let)
-      (function-put #'if-let* 'lisp-indent-function 2)
-      (function-put #'when-let* 'lisp-indent-function 1))))
+  (with-no-warnings
+    (if (version< emacs-version "26")
+        (progn
+          (defalias 'smart-jump-if-let* #'if-let)
+          (defalias 'smart-jump-when-let* #'when-let)
+          (function-put #'smart-jump-if-let* 'lisp-indent-function 2)
+          (function-put #'smart-jump-when-let* 'lisp-indent-function 1))
+      (defalias 'smart-jump-if-let* #'if-let*)
+      (defalias 'smart-jump-when-let* #'when-let*))))
 
 ;; Customizations
 
@@ -187,7 +190,8 @@ SMART-LIST will be set (or nil) if this is a continuation of a previous jump.
 
 CONTINUE will be non nil if this is a continuation of a previous jump."
   (interactive)
-  (when-let* ((sj-list (or smart-list (and (not continue) smart-jump-list))))
+  (smart-jump-when-let*
+      ((sj-list (or smart-list (and (not continue) smart-jump-list))))
     (smart-jump-run
      #'smart-jump-go
      sj-list
@@ -210,7 +214,8 @@ call to `smart-jump-references'.
 CONTINUE will be set if this is a continuation of a previous call to
 `smart-jump-references'."
   (interactive)
-  (when-let* ((sj-list (or smart-list (and (not continue) smart-jump-list))))
+  (smart-jump-when-let*
+      ((sj-list (or smart-list (and (not continue) smart-jump-list))))
     (push-mark nil t nil)
     (smart-jump-run
      #'smart-jump-references
@@ -464,8 +469,9 @@ Argument ASYNC Async"
 MODE is mode to bind keys to."
   (when smart-jump-bind-keys
     (let* ((derived-mode-map-name (intern (format "%S-map" mode))))
-      (when-let* ((map (when (boundp derived-mode-map-name)
-                         (symbol-value derived-mode-map-name))))
+      (smart-jump-when-let*
+          ((map (when (boundp derived-mode-map-name)
+                  (symbol-value derived-mode-map-name))))
         (when smart-jump-bind-keys-for-evil
           (with-eval-after-load 'evil
             (when (fboundp 'evil-define-key*)
