@@ -63,6 +63,7 @@ multiple fallbacks."
     haskell-mode
     (js2-mode rjsx-mode)
     lisp-mode
+    lispy
     lua-mode
     lsp-mode
     python
