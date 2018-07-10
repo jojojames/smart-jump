@@ -150,7 +150,20 @@ first."
     )
   "Fallback settings to use when no other :jump-fn mechanism succeeded.")
 
-(defvar-local smart-jump-list `(,smart-jump-simple-fallback)
+(defvar smart-jump-xref-fallback
+  '(
+    :jump-fn xref-find-definitions
+    :pop-fn xref-pop-marker-stack
+    :refs-fn xref-find-references
+    :should-jump t
+    :heuristic error
+    :async nil
+    :order 1000
+    )
+  "Xref fallback to use when no other :jump-fn mechanism succeeded.")
+
+(defvar-local smart-jump-list `(,smart-jump-xref-fallback
+                                ,smart-jump-simple-fallback)
   "List of plists that contain metadata to trigger jump to definition
 or find references.
 
