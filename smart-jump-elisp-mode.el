@@ -45,7 +45,9 @@
                        :pop-fn 'pop-tag-mark
                        :should-jump #'smart-jump-elisp-slime-nav-available-p
                        :heuristic 'error
-                       :async nil))
+                       :async nil)
+
+  (smart-jump-register :modes '(emacs-lisp-mode lisp-interaction-mode)))
 
 (provide 'smart-jump-elisp-mode)
 ;;; smart-jump-elisp-mode.el ends here

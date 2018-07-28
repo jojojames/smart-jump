@@ -162,8 +162,7 @@ first."
     )
   "Xref fallback to use when no other :jump-fn mechanism succeeded.")
 
-(defvar-local smart-jump-list `(,smart-jump-xref-fallback
-                                ,smart-jump-simple-fallback)
+(defvar-local smart-jump-list `(,smart-jump-simple-fallback)
   "List of plists that contain metadata to trigger jump to definition
 or find references.
 
