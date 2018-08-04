@@ -56,6 +56,8 @@
   (smart-jump-register :modes '(c-mode c++-mode)
                        :jump-fn 'ycmd-goto
                        :refs-fn 'ycmd-goto-references
+                       :should-jump (lambda ()
+                                      (bound-and-true-p ycmd-mode))
                        :heuristic 'point
                        :async 2000
                        :order 2)
@@ -78,17 +80,20 @@
                        :jump-fn 'ggtags-find-tag-dwim
                        :pop-fn 'ggtags-prev-mark
                        :refs-fn 'ggtags-find-reference
-                       :should-jump t
+                       :should-jump  (lambda ()
+                                       (bound-and-true-p ggtags-mode))
                        :heuristic 'point
-                       :async 500
+                       :async 3000
                        :order 3)
 
   ;; Objective-C
   (smart-jump-register :modes 'objc-mode
                        :jump-fn 'ycmd-goto
                        :refs-fn 'ycmd-goto-references
+                       :should-jump (lambda ()
+                                      (bound-and-true-p ycmd-mode))
                        :heuristic 'point
-                       :async 500)
+                       :async 2000)
 
   (smart-jump-register :modes 'objc-mode
                        :jump-fn 'etags-select-find-tag-at-point
