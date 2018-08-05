@@ -55,6 +55,7 @@ multiple fallbacks."
   '(cc-mode ;; `java-mode', `c-mode', `c++-mode', `objc-mode'
     csharp-mode
     clojure-mode
+    eglot
     elisp-mode
     elixir-mode
     elm-mode
