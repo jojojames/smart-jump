@@ -401,6 +401,16 @@ http://tuhdo.github.io/emacs-frame-peek.html"
                                (order smart-jump-default-order-weight))
   "Register mode for use with `smart-jump'.
 
+MODES: Can be a mode '\(c-mode\), a list of modes '\(c-mode c++-mode\), a
+cons pair where the car of the pair is a mode and the cdr of the pair is
+a hook '\(c-mode . c-mode-hook\) or a list containing modes or pairs.
+'\(c-mode
+  \(java-mode . java-mode-hook\)\)
+
+If MODES contains a pair, the hook will be used to bootstrap `smart-jump' for
+that mode. If MODES contain just the mode, the hook will be derived from the
+mode's name.
+
 JUMP-FN: The function to call interactively to trigger go to definition.
 
 POP-FN: The reverse of jump-function.
@@ -429,14 +439,20 @@ fallback strategy is used first. Lower numbers give more precedence."
             (append xref-prompt-for-identifier (list 'smart-jump-go
                                                      'smart-jump-references
                                                      'smart-jump-peek)))))
-  (unless (listp modes)
+  (if (listp modes)
+      (when (atom (cdr modes))
+        ;; ~association list.
+        (setq modes (list modes)))
     (setq modes (list modes)))
-  (dolist (mode modes)
-    (let ((derived-mode-hook-name (intern (format "%S-hook" mode))))
+  (dolist (mode-or-pair modes)
+    (let* ((mode (if (atom mode-or-pair) mode-or-pair (car mode-or-pair)))
+           (derived-mode-hook-name (if (atom mode-or-pair)
+                                       (intern (format "%S-hook" mode))
+                                     (cdr mode-or-pair))))
       (dolist (b (buffer-list))
         (with-current-buffer b
           (when (or (bound-and-true-p mode) ;; `minor-mode'
-                    (eq major-mode mode)) ;; `major-mode'
+                    (eq major-mode mode))   ;; `major-mode'
             (smart-jump-bind-jump-keys mode)
             (smart-jump-update-jump-list
              jump-fn
