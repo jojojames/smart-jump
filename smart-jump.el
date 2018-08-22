@@ -191,6 +191,41 @@ See `smart-jump-register' for more details.")
            (intern (concat "smart-jump-" (symbol-name m) "-register"))))))))
 
 ;;;###autoload
+(defun smart-jump-diag ()
+  "Pop a buffer with information about `smart-jump'."
+  (interactive)
+  (let ((list smart-jump-list)
+        (jump-msg (format "smart-jump-jump-key: %s %S\n"
+                          smart-jump-jump-key
+                          (key-binding (kbd smart-jump-jump-key))))
+        (pop-msg (format "smart-jump-pop-key: %s %S\n"
+                         smart-jump-pop-key
+                         (key-binding (kbd smart-jump-pop-key))))
+        (refs-msg (format "smart-jump-refs-key: %s %S\n"
+                          smart-jump-refs-key
+                          (key-binding (kbd smart-jump-refs-key)))))
+    (pop-to-buffer (get-buffer-create "*smart-jump-diag*"))
+    (setq buffer-read-only nil)
+    (erase-buffer)
+    (insert "keybindings:\n")
+    (insert jump-msg)
+    (insert pop-msg)
+    (insert refs-msg)
+    (insert "\n")
+    (insert "smart-jump-list:\n")
+    (dolist (l list)
+      (insert "(\n")
+      (let ((i 0)
+            (length (length l)))
+        (while (< i length)
+          (let ((key (nth i l))
+                (val (nth (1+ i) l)))
+            (insert (format "%S %S\n" key val))
+            (setq i (+ i 2)))))
+      (insert ")\n\n"))
+    (goto-char 0)))
+
+;;;###autoload
 (defun smart-jump-peek ()
   "Peek at definition."
   (interactive)
