@@ -40,7 +40,7 @@ This needs to be set before `smart-jump-eglot-register' is called."
 
 (defun smart-jump-eglot-register ()
   "Register `eglot' for `smart-jump'."
-  (smart-jump-register :modes '(eglot-mode eglot--managed-mode)
+  (smart-jump-register :modes '(eglot-mode . eglot--managed-mode-hook)
                        :order smart-jump-eglot-order
                        :should-jump (lambda () eglot--managed-mode)))
 
