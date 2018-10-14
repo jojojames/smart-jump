@@ -36,6 +36,12 @@
        (fboundp 'slime-current-connection)
        (slime-current-connection)))
 
+(defun smart-jump-lisp-sly-available-p ()
+  "Return whether or not `sly' is available."
+  (and (bound-and-true-p sly-mode)
+       (fboundp 'sly-current-connection)
+       (sly-current-connection)))
+
 (defun smart-jump-lisp-mode-register ()
   "Register `smart-jump' for `lisp-mode'."
   (smart-jump-register :modes '(slime-mode slime-popup-buffer-mode)
@@ -44,7 +50,17 @@
                        :refs-fn 'slime-edit-uses
                        :should-jump #'smart-jump-lisp-slime-available-p
                        :heuristic 'point
-                       :async 700))
+                       :async 700
+                       :order 2)
+
+  (smart-jump-register :modes '(sly-mode sly-popup-buffer-mode)
+                       :jump-fn 'sly-edit-definition
+                       :pop-fn 'sly-pop-find-definition-stack
+                       :refs-fn 'sly-edit-uses
+                       :should-jump #'smart-jump-lisp-sly-available-p
+                       :heuristic 'point
+                       :async 700
+                       :order 1))
 
 (provide 'smart-jump-lisp-mode)
 ;;; smart-jump-lisp-mode.el ends here
