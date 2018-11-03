@@ -28,17 +28,27 @@
 ;;; Code:
 (require 'smart-jump)
 (require 'intero nil t)
+(require 'dante nil t)
 
 (defun smart-jump-haskell-mode-intero-available-p ()
   "Return whether or not `intero' is available."
   (bound-and-true-p intero-mode))
 
+(defun smart-jump-haskell-mode-dante-available-p ()
+  "Return whether or not `dante' is available."
+  (bound-and-true-p dante-mode))
+
 (defun smart-jump-haskell-mode-register ()
   "Register `smart-jump' for `haskell-mode'."
   (smart-jump-register :modes 'intero-mode
+                       :order 1
                        :jump-fn 'intero-goto-definition
                        :refs-fn 'smart-jump-simple-find-references
-                       :should-jump #'smart-jump-haskell-mode-intero-available-p))
+                       :should-jump #'smart-jump-haskell-mode-intero-available-p)
+
+  (smart-jump-register :modes 'dante-mode
+                       :order 2
+                       :should-jump #'smart-jump-haskell-mode-dante-available-p))
 
 (provide 'smart-jump-haskell-mode)
 ;;; smart-jump-haskell-mode.el ends here
