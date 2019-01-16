@@ -568,7 +568,9 @@ to use xref as the fallback."
                         ((symbol-at-point)
                          (substring-no-properties
                           (symbol-name (symbol-at-point))))))
-    (message "Install ag to use `smart-jump-simple-find-references-with-ag'.")))
+    (message
+     "Install the emacs package ag to use\
+ `smart-jump-simple-find-references-with-ag'.")))
 
 (defun smart-jump-get-async-wait-time (async)
   "Return the time in seconds for use with waiting for an async jump.
