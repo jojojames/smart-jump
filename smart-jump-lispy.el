@@ -35,6 +35,7 @@ This needs to be set before `smart-jump-lispy-register' is called."
   :type 'integer
   :group 'smart-jump)
 
+;;;###autoload
 (defun smart-jump-lispy-register ()
   "Register `smart-jump' for `lispy'."
   (smart-jump-register :modes 'lispy-mode

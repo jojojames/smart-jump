@@ -29,6 +29,7 @@
 (require 'smart-jump)
 (require 'smart-jump-typescript-mode)
 
+;;;###autoload
 (defun smart-jump-web-mode-register ()
   "Register `smart-jump' for `web-mode'."
   (smart-jump-typescript-mode-register 'web-mode))

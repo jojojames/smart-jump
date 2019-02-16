@@ -35,6 +35,7 @@
   (and (bound-and-true-p racer-mode)
        (executable-find "racer")))
 
+;;;###autoload
 (defun smart-jump-rust-mode-register ()
   "Register `smart-jump' for `rust-mode'."
   (smart-jump-register :modes 'rust-mode

@@ -29,6 +29,7 @@
 (require 'smart-jump)
 (require 'elm-mode nil t)
 
+;;;###autoload
 (defun smart-jump-elm-mode-register ()
   "Register `elm-mode' for `smart-jump'."
   (smart-jump-register :modes 'elm-mode))

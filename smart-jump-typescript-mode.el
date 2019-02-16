@@ -49,6 +49,7 @@
     :succeeded)
    (:default nil)))
 
+;;;###autoload
 (defun smart-jump-typescript-mode-register (&optional mode)
   "Register `smart-jump' for `typescript-mode'."
   (smart-jump-register :modes (or mode 'tide-mode)

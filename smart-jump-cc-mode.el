@@ -31,6 +31,7 @@
 ;;; Code:
 (require 'smart-jump)
 
+;;;###autoload
 (defun smart-jump-cc-mode-register ()
   "Register `cc-mode' for `smart-jump'."
   ;; Java

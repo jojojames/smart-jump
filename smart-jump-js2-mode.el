@@ -30,6 +30,7 @@
 (require 'smart-jump)
 (require 'xref-js2 nil t)
 
+;;;###autoload
 (defun smart-jump-js2-mode-register ()
   "Register `js2-mode' for `smart-jump'."
   (smart-jump-register :modes '(js2-mode rjsx-mode)))

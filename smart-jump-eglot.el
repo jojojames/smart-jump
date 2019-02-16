@@ -38,6 +38,7 @@ This needs to be set before `smart-jump-eglot-register' is called."
   :type 'integer
   :group 'smart-jump)
 
+;;;###autoload
 (defun smart-jump-eglot-register ()
   "Register `eglot' for `smart-jump'."
   (smart-jump-register :modes '(eglot-mode . eglot--managed-mode-hook)

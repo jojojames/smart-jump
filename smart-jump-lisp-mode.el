@@ -42,6 +42,7 @@
        (fboundp 'sly-current-connection)
        (sly-current-connection)))
 
+;;;###autoload
 (defun smart-jump-lisp-mode-register ()
   "Register `smart-jump' for `lisp-mode'."
   (smart-jump-register :modes '(slime-mode slime-popup-buffer-mode)

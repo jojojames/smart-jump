@@ -38,6 +38,7 @@
   "Return whether or not `dante' is available."
   (bound-and-true-p dante-mode))
 
+;;;###autoload
 (defun smart-jump-haskell-mode-register ()
   "Register `smart-jump' for `haskell-mode'."
   (smart-jump-register :modes 'intero-mode

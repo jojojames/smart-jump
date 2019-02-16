@@ -28,6 +28,7 @@
 ;;; Code:
 (require 'smart-jump)
 
+;;;###autoload
 (defun smart-jump-swift-mode-register ()
   "Register `smart-jump' for `swift-mode'."
   (smart-jump-bind-jump-keys 'swift-mode))

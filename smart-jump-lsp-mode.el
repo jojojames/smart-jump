@@ -36,6 +36,7 @@ This needs to be set before `smart-jump-lsp-mode-register' is called."
   :type 'integer
   :group 'smart-jump)
 
+;;;###autoload
 (defun smart-jump-lsp-mode-register ()
   "Register `lsp-mode' for `smart-jump'."
   (smart-jump-register :modes 'lsp-mode :order smart-jump-lsp-mode-order))

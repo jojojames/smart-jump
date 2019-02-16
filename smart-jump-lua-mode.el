@@ -28,6 +28,7 @@
 ;;; Code:
 (require 'smart-jump)
 
+;;;###autoload
 (defun smart-jump-lua-mode-register ()
   "Register `smart-jump' for `lua-mode'."
   (smart-jump-bind-jump-keys 'lua-mode))

@@ -34,6 +34,7 @@
   ;; FIXME: Should we check if `ensime' is somehow 'connected'?
   (bound-and-true-p ensime-mode))
 
+;;;###autoload
 (defun smart-jump-scala-mode-register ()
   "Register `smart-jump' for `scala-mode'."
   (smart-jump-register :modes 'ensime-mode

@@ -35,6 +35,7 @@
   "Return whether or not `robe' is available."
   (bound-and-true-p robe-mode))
 
+;;;###autoload
 (defun smart-jump-ruby-mode-register ()
   "Register `smart-jump' for `ruby-mode'."
   (smart-jump-register :modes 'robe-mode

@@ -35,6 +35,7 @@
   "Return whether or not `go-guru' is available."
   (fboundp 'go-guru-definition))
 
+;;;###autoload
 (defun smart-jump-go-mode-register ()
   "Register `go-mode' for `smart-jump'."
   (smart-jump-register :modes 'go-mode

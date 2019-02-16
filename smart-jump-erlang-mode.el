@@ -29,6 +29,7 @@
 (require 'smart-jump)
 (require 'erlang nil t)
 
+;;;###autoload
 (defun smart-jump-erlang-mode-register ()
   "Register `erlang-mode' for `smart-jump'."
   (smart-jump-register :modes 'erlang-mode))

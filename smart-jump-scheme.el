@@ -34,6 +34,7 @@
   "Return whether or not `geiser' is available."
   (and (bound-and-true-p geiser-mode)))
 
+;;;###autoload
 (defun smart-jump-scheme-register ()
   "Register `smart-jump' for `scheme'."
   (smart-jump-register :modes '(scheme-mode

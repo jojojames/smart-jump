@@ -34,6 +34,7 @@
   "Return whether or not `alchemist' is available."
   (bound-and-true-p alchemist-mode))
 
+;;;###autoload
 (defun smart-jump-elixir-mode-register ()
   "Register `smart-jump' for `elixir-mode'."
   (smart-jump-register :modes 'elixir-mode

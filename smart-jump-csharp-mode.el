@@ -35,6 +35,7 @@
   "Return whether or not `omnisharp' is available."
   (bound-and-true-p omnisharp-mode))
 
+;;;###autoload
 (defun smart-jump-csharp-mode-register ()
   "Register `smart-jump' for `csharp-mode'."
   (smart-jump-register :modes 'csharp-mode

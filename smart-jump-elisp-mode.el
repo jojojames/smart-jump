@@ -38,6 +38,7 @@
    (fboundp 'elisp-slime-nav-find-elisp-thing-at-point)
    (autoloadp (symbol-function 'elisp-slime-nav-find-elisp-thing-at-point))))
 
+;;;###autoload
 (defun smart-jump-elisp-mode-register ()
   "Register `smart-jump' for `elisp-mode'."
   (smart-jump-register :modes '(emacs-lisp-mode lisp-interaction-mode)

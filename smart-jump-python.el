@@ -34,6 +34,7 @@
   "Return whether or not `anaconda-mode' is available."
   (bound-and-true-p anaconda-mode))
 
+;;;###autoload
 (defun smart-jump-python-register ()
   "Register `smart-jump' for `python'."
   (smart-jump-register :modes 'python-mode

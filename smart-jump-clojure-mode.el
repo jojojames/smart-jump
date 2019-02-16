@@ -38,6 +38,7 @@
    (fboundp 'cider-connected-p)
    (cider-connected-p)))
 
+;;;###autoload
 (defun smart-jump-clojure-mode-register ()
   "Register `clojure-mode' for `smart-jump'."
   (smart-jump-register :modes '(clojure-mode cider-mode cider-repl-mode)
