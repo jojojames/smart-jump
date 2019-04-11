@@ -43,6 +43,15 @@
                        :refs-fn 'anaconda-mode-find-references
                        :should-jump #'smart-jump-python-anaconda-available-p
                        :heuristic 'point
+                       :async 600)
+  
+  (smart-jump-register :modes 'python-mode
+                       :jump-fn 'elpy-goto-definition
+                       :pop-fn 'xref-pop-marker-stack
+                       ;; pending https://github.com/jorgenschaefer/elpy/issues/1082
+                       :refs-fn nil
+                       :should-jump (lambda () t)
+                       :heuristic 'point
                        :async 600))
 
 (provide 'smart-jump-python)
