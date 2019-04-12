@@ -29,8 +29,9 @@
 (require 'smart-jump)
 (require 'python)
 (require 'anaconda-mode nil t)
+(require 'elpy-mode nil t)
 
-(defcustom smart-jump-bind-keys t
+(defcustom smart-jump-python-force-elpy nil
   "If true, use elpy even if elpy-mode is not turned on."
   :type 'boolean
   :group 'smart-jump)
