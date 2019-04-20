@@ -29,7 +29,7 @@
 (require 'smart-jump)
 (require 'python)
 (require 'anaconda-mode nil t)
-(require 'elpy-mode nil t)
+(require 'elpy nil t)
 
 (defcustom smart-jump-python-force-elpy nil
   "If true, use elpy even if elpy-mode is not turned on."
