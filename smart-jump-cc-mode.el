@@ -71,7 +71,7 @@
                                       (and
                                        (fboundp 'rtags-executable-find)
                                        (fboundp 'rtags-is-indexed)
-                                       (rtags-executable-find "rc")
+                                       (rtags-executable-find rtags-rc-binary-name)
                                        (rtags-is-indexed)))
                        :heuristic 'point
                        :async 2000
