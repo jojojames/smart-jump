@@ -31,6 +31,8 @@
 ;;; Code:
 (require 'smart-jump)
 
+(defvar rtags-rc-binary-name)
+
 ;;;###autoload
 (defun smart-jump-cc-mode-register ()
   "Register `cc-mode' for `smart-jump'."
