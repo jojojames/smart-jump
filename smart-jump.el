@@ -70,7 +70,6 @@ multiple fallbacks."
     python
     ruby-mode
     rust-mode
-    scala-mode
     scheme
     swift-mode
     typescript-mode
