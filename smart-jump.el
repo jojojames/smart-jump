@@ -571,6 +571,20 @@ to use xref as the fallback."
      "Install the emacs package ag to use\
  `smart-jump-simple-find-references-with-ag'.")))
 
+(defun smart-jump-find-references-with-rg ()
+  "Use `rg' to find references."
+  (interactive)
+  (if (fboundp 'rg-project)
+      (rg-project (cond ((use-region-p)
+                         (buffer-substring-no-properties (region-beginning)
+                                                         (region-end)))
+                        ((symbol-at-point)
+                         (substring-no-properties
+                          (symbol-name (symbol-at-point))))))
+    (message
+     "Install the emacs package rg to use\
+ `smart-jump-simple-find-references-with-rg'.")))
+
 (defun smart-jump-get-async-wait-time (async)
   "Return the time in seconds for use with waiting for an async jump.
 If ASYNC is a number, use to determine the wait time."
