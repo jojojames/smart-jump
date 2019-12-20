@@ -497,7 +497,8 @@ to use xref as the fallback."
                                                          (region-end)))
                         ((symbol-at-point)
                          (substring-no-properties
-                          (symbol-name (symbol-at-point))))))
+                          (symbol-name (symbol-at-point)))))
+                  ".*")
     (message
      "Install the emacs package rg to use\
  `smart-jump-simple-find-references-with-rg'.")))
