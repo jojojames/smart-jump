@@ -23,14 +23,54 @@
   Alternatively, clone this repo, add it to Emacs' ~load-path~ and then require
   ~smart-jump~.
 
-  There's also some ready made ~smart-jumps~. Just call ~smart-jump-setup-default-registers.~
+  There's also some ready made ~smart-jumps~.
 
+  There are two ways to set up default registers.
+
+  Call ~smart-jump-setup-default-registers.~
   #+begin_src emacs-lisp :tangle yes
-    (use-package smart-jump
-      :ensure t
-      :config
-      (smart-jump-setup-default-registers))
+(use-package smart-jump
+  :ensure t
+  :config
+  (smart-jump-setup-default-registers))
   #+end_src
+
+  Bind commands to smart-jump-go, smart-jump-back and smart-jump-references.
+  #+begin_src emacs-lisp :tangle yes
+(use-package smart-jump
+  :ensure t
+  :commands (smart-jump-go smart-jump-back smart-jump-references))
+  #+end_src
+  Upon running one of these commands, smart-jump will register jumps for you.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package smart-jump
+  :ensure t
+  :bind (("M-." . smart-jump-go)
+         ("M-," . smart-jump-back)
+         ("M-?" . smart-jump-references)))
+#+end_src
+
+Defer smart-jump by using :bind.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package smart-jump
+  :ensure t
+  :commands (smart-jump-go smart-jump-back smart-jump-references)
+  :init
+  (with-eval-after-load 'general
+    (general-define-key
+     :states '(normal visual motion)
+     :keymaps 'override
+     "M-." 'smart-jump-go
+     "M-," 'smart-jump-back
+     "M-?" 'smart-jump-references)))
+#+end_src
+
+Defer smart-jump in evil with general.
+
+The deferred approaches allows one to save some startup-time by avoiding having
+to load the package as well as loop through all the jump registrations.
 
 * Examples
 ** Bare minimum example

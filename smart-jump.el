@@ -119,6 +119,9 @@ first."
   :type 'function
   :group 'smart-jump)
 
+(defvar smart-jump-registered-p nil
+  "Variable to track if `smart-jump' has registered its jumps.")
+
 (defvar smart-jump-stack '() "Stack used to navigate tags.")
 
 (defvar smart-jump-xref-fallback
@@ -147,18 +150,20 @@ See `smart-jump-register' for more details.")
 (defun smart-jump-setup-default-registers ()
   "Register a default set of modes for `smart-jump'."
   (interactive)
-  (dolist (mode smart-jump-default-mode-list)
-    (let ((m mode)
-          (reqs (list mode)))
-      (when (listp mode)
-        (setq m (car mode)
-              reqs (cdr mode)))
-      (dolist (req reqs)
-        (with-eval-after-load req
-          (require
-           (intern (concat "smart-jump-" (symbol-name m))))
-          (funcall
-           (intern (concat "smart-jump-" (symbol-name m) "-register"))))))))
+  (unless smart-jump-registered-p
+    (setq smart-jump-registered-p :registered)
+    (dolist (mode smart-jump-default-mode-list)
+      (let ((m mode)
+            (reqs (list mode)))
+        (when (listp mode)
+          (setq m (car mode)
+                reqs (cdr mode)))
+        (dolist (req reqs)
+          (with-eval-after-load req
+            (require
+             (intern (concat "smart-jump-" (symbol-name m))))
+            (funcall
+             (intern (concat "smart-jump-" (symbol-name m) "-register")))))))))
 
 ;;;###autoload
 (defun smart-jump-diag ()
@@ -203,6 +208,8 @@ SMART-LIST will be set (or nil) if this is a continuation of a previous jump.
 
 CONTINUE will be non nil if this is a continuation of a previous jump."
   (interactive)
+  (unless smart-jump-registered-p
+    (smart-jump-setup-default-registers))
   (smart-jump-when-let*
       ((sj-list (or smart-list (and (not continue) smart-jump-list))))
     (smart-jump-run
@@ -214,6 +221,8 @@ CONTINUE will be non nil if this is a continuation of a previous jump."
 (defun smart-jump-back ()
   "Jump back to where the last jump was done."
   (interactive)
+  (unless smart-jump-registered-p
+    (smart-jump-setup-default-registers))
   (call-interactively (if (> (length smart-jump-stack) 0)
                           (pop smart-jump-stack)
                         'xref-pop-marker-stack)))
@@ -227,6 +236,8 @@ call to `smart-jump-references'.
 CONTINUE will be set if this is a continuation of a previous call to
 `smart-jump-references'."
   (interactive)
+  (unless smart-jump-registered-p
+    (smart-jump-setup-default-registers))
   (smart-jump-when-let*
       ((sj-list (or smart-list (and (not continue) smart-jump-list))))
     (push-mark nil t nil)
