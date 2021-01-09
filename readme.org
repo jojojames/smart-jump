@@ -128,9 +128,68 @@
 
    Take a look at [[file:examples.org][this for more examples.]]
 
-* Screenshots
+* Archived Code
   Peek to Definition
   [[./screenshots/peek.png]]
+
+  #+begin_src emacs-lisp :tangle yes
+;;; This is code that used to be in smart-jump that I'm moving here now.
+;;;###autoload
+(defun smart-jump-peek ()
+  "Peek at definition."
+  (interactive)
+  (smart-jump-make-peek-frame 'smart-jump-go))
+
+(defun smart-jump-make-peek-frame (find-definition-function &rest args)
+  "Make a new frame for peeking definition.
+
+Credits to @tuhdo.
+
+http://tuhdo.github.io/emacs-frame-peek.html"
+  (let (doc-frame
+        x y
+        ;; 1. Find the absolute position of the current beginning of the
+        ;; symbol at point, in pixels.
+        (abs-pixel-pos (save-excursion
+                         ;; (beginning-of-thing 'symbol)
+                         (beginning-of-line)
+                         (window-absolute-pixel-position))))
+    (setq x (car abs-pixel-pos))
+    (setq y (+ (cdr abs-pixel-pos)
+               (frame-char-height)))
+
+    ;; 2. Create a new invisible frame, with the current buffer in it.
+    (setq doc-frame (make-frame '((name . "*SmartJump Peek*")
+                                  (width . 80)
+                                  (visibility . nil)
+                                  (height . 20)
+                                  (min-width  . t)
+                                  (min-height . t)
+                                  (border-width . 0)
+                                  (internal-border-width . 0)
+                                  (vertical-scroll-bars . nil)
+                                  (horizontal-scroll-bars . nil)
+                                  (left-fringe . 0)
+                                  (right-fringe . 0)
+                                  (tool-bar-lines . 0)
+                                  (line-spacing . 0)
+                                  (unsplittable . t)
+                                  (no-other-frame . t)
+                                  (no-special-glyphs . t))))
+
+    ;; 3. Position the new frame right under the beginning of the
+    ;; symbol at point.
+    (set-frame-position doc-frame x y)
+
+    ;; 4. Jump to the symbol at point.
+    (with-selected-frame doc-frame
+      (apply find-definition-function args)
+      (recenter-top-bottom 0))
+
+    ;; 5. Make frame visible again.
+    (make-frame-visible doc-frame)))
+  #+end_src
+
 * Help Wanted :)
   Look into issue tracker!
   Add tests!

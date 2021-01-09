@@ -113,13 +113,6 @@ first."
   :type 'string
   :group 'smart-jump)
 
-;; FIXME: Finalize a good default key.
-;; This key may or may not be final.
-(defcustom smart-jump-peek-key "M-P"
-  "Key used for peeping at definitions."
-  :type 'string
-  :group 'smart-jump)
-
 (defcustom smart-jump-find-references-fallback-function
   'smart-jump-find-references-with-ag
   "The fallback function used by `smart-jump-simple-find-references'."
@@ -201,12 +194,6 @@ See `smart-jump-register' for more details.")
             (setq i (+ i 2)))))
       (insert ")\n\n"))
     (goto-char 0)))
-
-;;;###autoload
-(defun smart-jump-peek ()
-  "Peek at definition."
-  (interactive)
-  (smart-jump-make-peek-frame 'smart-jump-go))
 
 ;;;###autoload
 (defun smart-jump-go (&optional smart-list continue)
@@ -307,63 +294,6 @@ provided, `pop-tag-mark' will be used as the default."
             (error
              (funcall self-command sj-list :continue))))
       (funcall self-command sj-list :continue))))
-
-(defun smart-jump-make-peek-frame (find-definition-function &rest args)
-  "Make a new frame for peeking definition.
-
-Credits to @tuhdo.
-
-http://tuhdo.github.io/emacs-frame-peek.html"
-  (let (doc-frame
-        x y
-        ;; 1. Find the absolute position of the current beginning of the
-        ;; symbol at point, in pixels.
-        (abs-pixel-pos (save-excursion
-                         ;; (beginning-of-thing 'symbol)
-                         (beginning-of-line)
-                         (window-absolute-pixel-position))))
-    (setq x (car abs-pixel-pos))
-
-    ;; FIXME: We might want to recenter the original view first before getting
-    ;; y so that the new popup frame never goes beneath our screen.
-    (setq y (+ (cdr abs-pixel-pos)
-               (frame-char-height)))
-
-    ;; 2. Create a new invisible frame, with the current buffer in it.
-    (setq doc-frame (make-frame '((name . "*SmartJump Peek*")
-                                  (width . 80)
-                                  (visibility . nil)
-                                  (height . 20)
-                                  (min-width  . t)
-                                  (min-height . t)
-                                  (border-width . 0)
-                                  (internal-border-width . 0)
-                                  (vertical-scroll-bars . nil)
-                                  (horizontal-scroll-bars . nil)
-                                  (left-fringe . 0)
-                                  (right-fringe . 0)
-                                  (tool-bar-lines . 0)
-                                  (line-spacing . 0)
-                                  (unsplittable . t)
-                                  (no-other-frame . t)
-                                  (no-special-glyphs . t))))
-
-    ;; 3. Position the new frame right under the beginning of the
-    ;; symbol at point.
-    (set-frame-position doc-frame x y)
-
-    ;; 4. Jump to the symbol at point.
-    (with-selected-frame doc-frame
-      (apply find-definition-function args)
-      ;; FIXME: If we make this read-only, we need to be able to revert its
-      ;; readonly status after the frame is killed.
-      ;; FIXME: If we make this readonly, it'd be nice to bind q to quit the
-      ;; frame and buffer quickly.
-      ;; (read-only-mode)
-      (recenter-top-bottom 0))
-
-    ;; 5. Make frame visible again.
-    (make-frame-visible doc-frame)))
 
 (cl-defun smart-jump-register (&key
                                modes
@@ -520,12 +450,10 @@ MODE is mode to bind keys to."
               (evil-define-key* 'normal map
                                 (kbd smart-jump-jump-key) #'smart-jump-go
                                 (kbd smart-jump-pop-key) #'smart-jump-back
-                                (kbd smart-jump-refs-key) #'smart-jump-references
-                                (kbd smart-jump-peek-key) #'smart-jump-peek))))
+                                (kbd smart-jump-refs-key) #'smart-jump-references))))
         (define-key map (kbd smart-jump-jump-key) #'smart-jump-go)
         (define-key map (kbd smart-jump-pop-key) #'smart-jump-back)
-        (define-key map (kbd smart-jump-refs-key) #'smart-jump-references)
-        (define-key map (kbd smart-jump-peek-key) #'smart-jump-peek)))))
+        (define-key map (kbd smart-jump-refs-key) #'smart-jump-references)))))
 
 (defun smart-jump-simple-find-references ()
   "Fallback method for `smart-jump-references'.
