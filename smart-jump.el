@@ -6,7 +6,7 @@
 ;; Maintainer: James Nguyen <james@jojojames.com>
 ;; URL: https://github.com/jojojames/smart-jump
 ;; Version: 0.0.1
-;; Package-Requires: ((emacs "25.1") (dumb-jump "0.5.1"))
+;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: tools
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,6 @@
 
 ;;; Code:
 (eval-when-compile (require 'subr-x))
-(require 'dumb-jump)
 (require 'seq)
 
 ;; Compatibility
@@ -55,25 +54,16 @@ multiple fallbacks."
   '(cc-mode ;; `java-mode', `c-mode', `c++-mode', `objc-mode'
     csharp-mode
     clojure-mode
-    eglot
     elisp-mode
     elixir-mode
-    elm-mode
-    erlang-mode
     go-mode
-    haskell-mode
-    (js2-mode rjsx-mode)
     lisp-mode
     lispy
-    lua-mode
-    lsp-mode
     python
     ruby-mode
     rust-mode
     scheme
-    swift-mode
-    typescript-mode
-    web-mode)
+    typescript-mode)
   "The list of modes `smart-jump-setup-default-registers' uses to
 register `smart-jump's."
   :type '(repeat (choice symbol sexp))
@@ -138,18 +128,6 @@ first."
 
 (defvar smart-jump-stack '() "Stack used to navigate tags.")
 
-(defvar smart-jump-simple-fallback
-  '(
-    :jump-fn dumb-jump-go
-    :pop-fn dumb-jump-back
-    :refs-fn smart-jump-simple-find-references
-    :should-jump t
-    :heuristic point
-    :async nil
-    :order 1000
-    )
-  "Fallback settings to use when no other :jump-fn mechanism succeeded.")
-
 (defvar smart-jump-xref-fallback
   '(
     :jump-fn xref-find-definitions
@@ -162,7 +140,7 @@ first."
     )
   "Xref fallback to use when no other :jump-fn mechanism succeeded.")
 
-(defvar-local smart-jump-list `(,smart-jump-simple-fallback)
+(defvar-local smart-jump-list `(,smart-jump-xref-fallback)
   "List of plists that contain metadata to trigger jump to definition
 or find references.
 

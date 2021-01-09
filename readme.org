@@ -8,7 +8,7 @@
   do so.
 
   If one method fails, this package will go on to the next one, eventually
-  falling back to [[https://github.com/jacktasia/dumb-jump][dumb-jump]].
+  falling back to the default xref.
 
 * Install
   Install using ~use-package~.
@@ -34,11 +34,17 @@
 
 * Examples
 ** Bare minimum example
-   Sets up smart-jump for [[https://github.com/mooz/js2-mode][js2-mode]] with default settings. Defaults will use the
-   built-in [[https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/xref.el][xref]] functions first and fall back to dumb-jump if that fails.
+   Sets up smart-jump for python-mode with anaconda. smart-jump will first
+   attempt to jump using anaconda and, falling back to xref if anaconda fails.
 
    #+begin_src emacs-lisp :tangle yes
-   (smart-jump-register :modes '(js2-mode))
+  (smart-jump-register :modes 'python-mode
+                       :jump-fn 'anaconda-mode-find-definitions
+                       :pop-fn 'anaconda-mode-go-back
+                       :refs-fn 'anaconda-mode-find-references
+                       :should-jump #'smart-jump-python-anaconda-available-p
+                       :heuristic 'point
+                       :async 600)
    #+end_src
 ** Multiple modes
    Sets up smart-jump for both emacs-lisp-mode and lisp-interaction-mode.
@@ -113,7 +119,7 @@
    In this case, the fallback strategy is ->
 
    - For Jumping
-   ~rtags-find-symbol-at-point~ -> ~ggtags-find-tag-dwim~ -> ~dumb-jump-go~
+   ~rtags-find-symbol-at-point~ -> ~ggtags-find-tag-dwim~ -> ~xref~
 
    - For Finding References
    ~rtags-find-all-references-at-point~ -> ~ggtags-find-reference~ -> ~smart-jump-simple-find-references~
