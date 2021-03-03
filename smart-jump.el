@@ -306,6 +306,7 @@ provided, `pop-tag-mark' will be used as the default."
              (funcall self-command sj-list :continue))))
       (funcall self-command sj-list :continue))))
 
+;;;###autoload
 (cl-defun smart-jump-register (&key
                                modes
                                (jump-fn 'xref-find-definitions)
