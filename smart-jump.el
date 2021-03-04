@@ -356,8 +356,7 @@ fallback strategy is used first. Lower numbers give more precedence."
     (unless (memq 'smart-jump-go xref-prompt-for-identifier)
       (setq xref-prompt-for-identifier
             (append xref-prompt-for-identifier (list 'smart-jump-go
-                                                     'smart-jump-references
-                                                     'smart-jump-peek)))))
+                                                     'smart-jump-references)))))
   (if (listp modes)
       (when (atom (cdr modes))
         ;; ~association list.
