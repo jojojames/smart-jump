@@ -28,6 +28,7 @@
 ;;; Code:
 (eval-when-compile (require 'subr-x))
 (require 'seq)
+(require 'xref)
 
 ;; Compatibility
 
